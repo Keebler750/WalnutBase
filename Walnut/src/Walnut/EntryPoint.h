@@ -1,14 +1,21 @@
 #pragma once
 
+#include "../MathFunctions.h"
+
 #ifdef WL_PLATFORM_WINDOWS
 
 extern Walnut::Application* Walnut::CreateApplication(int argc, char** argv);
 bool g_ApplicationRunning = true;
 
+// instantiation of class object to access non static class members (technically a singleton...)
+WAYPOINT item;
 namespace Walnut {
+	
 
 	int Main(int argc, char** argv)
 	{
+
+		
 		while (g_ApplicationRunning)
 		{
 			Walnut::Application* app = Walnut::CreateApplication(argc, argv);

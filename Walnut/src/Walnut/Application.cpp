@@ -452,9 +452,14 @@ namespace Walnut {
 		//io.ConfigViewportsNoAutoMerge = true;
 		//io.ConfigViewportsNoTaskBarIcon = true;
 
+
 		// Setup Dear ImGui style
-		ImGui::StyleColorsDark();
+		//ImGui::StyleColorsDark();
 		//ImGui::StyleColorsClassic();
+
+
+		///////////////////////////////////////////////
+		
 
 		// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
 		ImGuiStyle& style = ImGui::GetStyle();
@@ -463,6 +468,11 @@ namespace Walnut {
 			style.WindowRounding = 0.0f;
 			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 		}
+		
+		style.WindowPadding = ImVec2(40.0f, 20.0f);
+		style.Colors[ImGuiCol_WindowBg] = ImVec4(0.12f, 0.14f, 0.16f, 0.6f);
+
+		
 
 		// Setup Platform/Renderer backends
 		ImGui_ImplGlfw_InitForVulkan(m_WindowHandle, true);
