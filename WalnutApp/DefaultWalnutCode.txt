@@ -1,0 +1,65 @@
+#include "Walnut/Application.h"
+#include "Walnut/EntryPoint.h"
+
+#include "Walnut/Image.h"
+
+
+
+class ExampleLayer : public Walnut::Layer
+{
+public:
+	virtual void OnUIRender() override
+	{
+	
+		
+		//static bool show_demo_window = false;
+		//static int counter = 0;
+
+		ImGui::Begin("Hello");
+		{
+		
+			/*for(int i = 0; i <= counter; i++)
+			{ 
+				ImGui::Checkbox("Show Demo", &show_demo_window);
+
+				ImGui::Text("Hello, world.");
+
+				if (ImGui::Button("Click"))
+					counter++;
+				
+				ImGui::Text("Counter = %d", counter);
+
+				if (ImGui::Button("Reset"))
+					counter = 0;
+			}
+			
+			if(show_demo_window)
+			ImGui::ShowDemoWindow();*/
+
+		}ImGui::End();
+
+		
+		
+	}
+};
+
+Walnut::Application* Walnut::CreateApplication(int argc, char** argv)
+{
+	Walnut::ApplicationSpecification spec;
+	spec.Name = "Walnut Example";
+
+	Walnut::Application* app = new Walnut::Application(spec);
+	app->PushLayer<ExampleLayer>();
+	app->SetMenubarCallback([app]()
+	{
+		if (ImGui::BeginMenu("File"))
+		{
+			if (ImGui::MenuItem("Exit"))
+			{
+				app->Close();
+			}
+			ImGui::EndMenu();
+		}
+	});
+	return app;
+}

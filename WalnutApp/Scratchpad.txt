@@ -1,0 +1,60 @@
+Scratchpad.txt:
+
+Format Width:
+
+ImGui::PushItemWidth(100); // sets input box width until the POP below.
+ImGui::PopItemWidth();
+
+
+Separators:
+
+ImGui::Dummy(ImVec2(0.0f, 5.0f)); // Component that allows for format/spacing that is invisible
+ImGui::Separator();
+ImGui::Dummy(ImVec2(0.0f, 5.0f));
+
+
+Convert Km to Nm:
+
+float nResult = fResult * 0.5399568; // to nautical miles
+
+
+Make useful Lat/Long from input:
+
+fResult = haversine((f0 + (f1 / 60) + (f2 / 3600)), (f3 + (f4 / 60) + (f5 / 3600)), (f6 + (f7 / 60) + (f8 / 3600)), (f9 + (f10 / 60) + (f11 / 3600)));
+
+
+Show result in box:
+
+ImGui::InputFloat("##", &fResult, NULL, NULL, "% .1f");  // Different method of displaying result inside the box
+
+/*static float temp_lat_d = 0.0f;
+static float temp_lat_m = 0.0f;
+static float temp_lat_s = 0.0f;
+static float temp_lon_d = 0.0f;
+static float temp_lon_m = 0.0f;
+static float temp_lon_s = 0.0f;*/
+
+/*ImGui::Text("LAT   ");
+ImGui::SameLine();
+ImGui::InputFloat("DEG##LAT1", &temp_lat_d, NULL, NULL, "%.4f"); //Entry.at(a).LAT_d -- NULL takes away the increment/decrement range creation buttons
+ImGui::SameLine();
+ImGui::InputFloat("MIN##LAT1", &temp_lat_m, NULL, NULL, "%.4f");
+ImGui::SameLine();
+ImGui::InputFloat("SEC##LAT1", &temp_lat_s, NULL, NULL, "%.4f");
+
+ImGui::Text("LONG");
+ImGui::SameLine();
+ImGui::InputFloat("DEG##LON1", &temp_lon_d, NULL, NULL, "%.4f"); // NULL takes away the increment/decrement range creation buttons
+ImGui::SameLine();
+ImGui::InputFloat("MIN##LON1", &temp_lon_m, NULL, NULL, "%.4f");
+ImGui::SameLine();
+ImGui::InputFloat("SEC##LON1", &temp_lon_s, NULL, NULL, "%.4f");
+
+//ImGui::PopID();
+
+ImGui::Dummy(ImVec2(0.0f, 10.0f)); // Component that allows for format/spacing that is invisible
+ImGui::Separator();
+ImGui::Dummy(ImVec2(0.0f, 10.0f));
+
+ImGui::PopItemWidth();*/
+
