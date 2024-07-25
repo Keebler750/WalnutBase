@@ -6,6 +6,8 @@ PRIORITY:
 
 - Take all calculations out of the render loop.
 
+- Reduce the number of unnecessary cycles through the loop if nothing is changing
+
 
 TO DO:
 
