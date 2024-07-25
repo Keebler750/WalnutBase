@@ -28,6 +28,10 @@ static float scaledElementSize = 70.0f;
 
 static int units = 2;   // Sets Units default ENUM to nautical miles
 
+// switch used to control emplace_back of new waypoint in // MathFunctions.h //
+static bool b_IsNewWaypoint = false;
+static int WaypointCounter = 0;
+
 
     // STRUCT data type combining all of the waypoint floats.
 struct WPT
@@ -63,7 +67,7 @@ struct WPT
 
 
     // if this isn't external and static it won't save properly due to...... while-loop render?
-static std::vector<WPT> Entry;
+static std::vector<WPT> WaypointEntry;
 
 
     // Modular creation and storage of waypoint items instead of one big static display of onscreen entries.
@@ -88,31 +92,33 @@ public:
 
         // Default constructor
     WAYPOINT()
-        //: lat_d(0.0f), lat_m(0.0f), lat_s(0.0f), lon_d(0.0f), 
-        //lon_m(0.0f), lon_s(0.0f), profile(0), distance(0.0f), fuel(0), ns(0), ew(0)
+        : lat_d(0.0f), lat_m(0.0f), lat_s(0.0f), lon_d(0.0f), 
+        lon_m(0.0f), lon_s(0.0f), profile(0), distance(0.0f), fuel(0), ns(0), ew(0)
     {
 
     }
 
         // FUNCTION - pass in var which represents waypoint number. Helps with screen element IDs as well, for the hash.
-    void drawEntry(int a, int units, bool& b_IsNewWPT)
+    void drawEntry(int m_vectorPOS, int units)
     {
-        if (b_IsNewWPT) // This check mechanism allows us to only push back an element ONCE when creating a new waypoint, to avoid a race condition.
+        if (b_IsNewWaypoint) // This check mechanism allows us to only push back an element ONCE when creating a new waypoint, to avoid a race condition.
         {
             // creates, and initializes with zero for the input box.
-            Entry.emplace_back(lat_d, lat_m, lat_s, lon_d, lon_m, lon_s, profile, distance, fuel, ns, ew);
-            testMarker++;
-            b_IsNewWPT = false;
-            //b_IsNewWaypoint = false; // This is the proper way to do it, I think. Why pass bool value in? Just ref it or use directly
+            WaypointEntry.emplace_back(lat_d, lat_m, lat_s, lon_d, lon_m, lon_s, profile, distance, fuel, ns, ew);
+            
+            b_IsNewWaypoint = false; // reset until value is made true again by button press to create waypoint
         }
 
         // SIZE TEST:
         // ImGui::Text("Entry size: %d", Entry.size());
         ImGui::PushItemWidth(scaledElementSize); // sets input box width until the POP below.
 
-            ImGui::Text("Waypoint : %d", a); //
+            ImGui::Text("Waypoint : %d", m_vectorPOS); //
 
-            ImGui::PushID(a);
+            ImGui::PushID(m_vectorPOS);     //This differentiates the ImGui data labels through each loop 
+                                            // to avoid dupes because it is a HASH of PushID + DataLabel
+
+            testMarker++;
 
             //WPT LAT:
             ImGui::Text("LAT   ");
@@ -120,30 +126,30 @@ public:
 
                 ImGui::PushItemWidth(scaledElementSize);/// width for combo button
 
-                    if (ImGui::Combo("##1", &Entry.at(a).NS, "North\0South\0", 2))
+                    if (ImGui::Combo("##1", &WaypointEntry.at(m_vectorPOS).NS, "North\0South\0", 2))
                     {
-                        Entry.at(a).NS = Entry.at(a).NS;
+                        WaypointEntry.at(m_vectorPOS).NS = WaypointEntry.at(m_vectorPOS).NS;
                     }
                     ImGui::SameLine();
 
                 ImGui::PopItemWidth(); ImGui::SameLine();
 
-            ImGui::InputFloat("DEG    ##LAT1", &Entry.at(a).LAT_d, NULL, NULL, "%.5f");// NULL takes away the increment/decrement range creation button
-            Entry.at(a).LAT_d = (std::clamp(Entry.at(a).LAT_d, 0.0f, 90.0f)); // max 90 degreees of Latitude. 
+            ImGui::InputFloat("DEG    ##LAT1", &WaypointEntry.at(m_vectorPOS).LAT_d, NULL, NULL, "%.5f");// NULL takes away the increment/decrement range creation button
+            WaypointEntry.at(m_vectorPOS).LAT_d = (std::clamp(WaypointEntry.at(m_vectorPOS).LAT_d, 0.0f, 90.0f)); // max 90 degreees of Latitude. 
 
             ImGui::SameLine();
-            ImGui::InputFloat("MIN    ##LAT1", &Entry.at(a).LAT_m, NULL, NULL, "%.5f");
-            Entry.at(a).LAT_m = std::clamp(Entry.at(a).LAT_m, 0.0f, 60.0f); // max 60 minutes in a degree
+            ImGui::InputFloat("MIN    ##LAT1", &WaypointEntry.at(m_vectorPOS).LAT_m, NULL, NULL, "%.5f");
+            WaypointEntry.at(m_vectorPOS).LAT_m = std::clamp(WaypointEntry.at(m_vectorPOS).LAT_m, 0.0f, 60.0f); // max 60 minutes in a degree
 
             ImGui::SameLine();
-            ImGui::InputFloat("SEC    ##LAT1", &Entry.at(a).LAT_s, NULL, NULL, "%.5f");
-            Entry.at(a).LAT_s = std::clamp(Entry.at(a).LAT_s, 0.0f, 60.0f); // max 60 seconds in a minute
+            ImGui::InputFloat("SEC    ##LAT1", &WaypointEntry.at(m_vectorPOS).LAT_s, NULL, NULL, "%.5f");
+            WaypointEntry.at(m_vectorPOS).LAT_s = std::clamp(WaypointEntry.at(m_vectorPOS).LAT_s, 0.0f, 60.0f); // max 60 seconds in a minute
 
                 // column two info:
-            if (a >= 1)
+            if (m_vectorPOS >= 1)
             {
                 ImGui::SameLine(); ImGui::Dummy(ImVec2(50.0f, 0.0f)); ImGui::SameLine();
-                ImGui::InputInt("  Flight Profile", &Entry.at(a).PROFILE, NULL, NULL);
+                ImGui::InputInt("  Flight Profile", &WaypointEntry.at(m_vectorPOS).PROFILE, NULL, NULL);
             }
 
                 //WPT LONG:
@@ -152,44 +158,44 @@ public:
 
                 ImGui::PushItemWidth(scaledElementSize);/// width for combo button
 
-                    if (ImGui::Combo("##2", &Entry.at(a).EW, "East\0West\0", 2))
+                    if (ImGui::Combo("##2", &WaypointEntry.at(m_vectorPOS).EW, "East\0West\0", 2))
                     {
-                        Entry.at(a).EW = Entry.at(a).EW;
+                        WaypointEntry.at(m_vectorPOS).EW = WaypointEntry.at(m_vectorPOS).EW;
                     }
             
                     ImGui::SameLine();
 
                 ImGui::PopItemWidth(); ImGui::SameLine();
 
-            ImGui::InputFloat("DEG    ##LON1", &Entry.at(a).LON_d, NULL, NULL, "%.5f"); // NULL takes away the increment/decrement range creation buttons
-            Entry.at(a).LON_d = std::clamp(Entry.at(a).LON_d, 0.0f, 180.0f);    // Max of 180 degrees of Longitude
+            ImGui::InputFloat("DEG    ##LON1", &WaypointEntry.at(m_vectorPOS).LON_d, NULL, NULL, "%.5f"); // NULL takes away the increment/decrement range creation buttons
+            WaypointEntry.at(m_vectorPOS).LON_d = std::clamp(WaypointEntry.at(m_vectorPOS).LON_d, 0.0f, 180.0f);    // Max of 180 degrees of Longitude
 
             ImGui::SameLine();
-            ImGui::InputFloat("MIN    ##LON1", &Entry.at(a).LON_m, NULL, NULL, "%.5f");
-            Entry.at(a).LON_m = std::clamp(Entry.at(a).LON_m, 0.0f, 60.0f);
+            ImGui::InputFloat("MIN    ##LON1", &WaypointEntry.at(m_vectorPOS).LON_m, NULL, NULL, "%.5f");
+            WaypointEntry.at(m_vectorPOS).LON_m = std::clamp(WaypointEntry.at(m_vectorPOS).LON_m, 0.0f, 60.0f);
 
             ImGui::SameLine();
-            ImGui::InputFloat("SEC    ##LON1", &Entry.at(a).LON_s, NULL, NULL, "%.5f");
-            Entry.at(a).LON_s = std::clamp(Entry.at(a).LON_s, 0.0f, 60.0f);
+            ImGui::InputFloat("SEC    ##LON1", &WaypointEntry.at(m_vectorPOS).LON_s, NULL, NULL, "%.5f");
+            WaypointEntry.at(m_vectorPOS).LON_s = std::clamp(WaypointEntry.at(m_vectorPOS).LON_s, 0.0f, 60.0f);
 
                 // Don't calc a distance if we only have one waypoint
                 // ---> Calculate the distance and store the data in the vector
-            if (a >= 1)
+            if (m_vectorPOS >= 1)
             { 
                 if (units == 1)         // KM
                 {
-                Entry.at(a).DISTANCE = haversine(a /*position*/, (Entry.at(a - 1).LAT_d + (Entry.at(a - 1).LAT_m / 60) + (Entry.at(a - 1).LAT_s / 3600)),    //Lat1
-                                                    (Entry.at(a - 1).LON_d + (Entry.at(a - 1).LON_m / 60) + (Entry.at(a - 1).LON_s / 3600)),    //Long1
-                                                    (Entry.at(a).LAT_d + (Entry.at(a).LAT_m / 60) + (Entry.at(a).LAT_s / 3600)),    //Lat2
-                                                    (Entry.at(a).LON_d + (Entry.at(a).LON_m / 60) + (Entry.at(a).LON_s / 3600)));   //Long2
+                WaypointEntry.at(m_vectorPOS).DISTANCE = haversine(m_vectorPOS /*position*/, (WaypointEntry.at(m_vectorPOS - 1).LAT_d + (WaypointEntry.at(m_vectorPOS - 1).LAT_m / 60) + (WaypointEntry.at(m_vectorPOS - 1).LAT_s / 3600)),    //Lat1
+                                                    (WaypointEntry.at(m_vectorPOS - 1).LON_d + (WaypointEntry.at(m_vectorPOS - 1).LON_m / 60) + (WaypointEntry.at(m_vectorPOS - 1).LON_s / 3600)),    //Long1
+                                                    (WaypointEntry.at(m_vectorPOS).LAT_d + (WaypointEntry.at(m_vectorPOS).LAT_m / 60) + (WaypointEntry.at(m_vectorPOS).LAT_s / 3600)),    //Lat2
+                                                    (WaypointEntry.at(m_vectorPOS).LON_d + (WaypointEntry.at(m_vectorPOS).LON_m / 60) + (WaypointEntry.at(m_vectorPOS).LON_s / 3600)));   //Long2
                 }
                 else if (units == 2)    // NM
                 {
-                Entry.at(a).DISTANCE =  ConvertDistance (
-                                        haversine(a /*position*/, (Entry.at(a - 1).LAT_d + (Entry.at(a - 1).LAT_m / 60) + (Entry.at(a - 1).LAT_s / 3600)),   //Lat1
-                                                    (Entry.at(a - 1).LON_d + (Entry.at(a - 1).LON_m / 60) + (Entry.at(a - 1).LON_s / 3600)),    //Long1
-                                                    (Entry.at(a).LAT_d + (Entry.at(a).LAT_m / 60) + (Entry.at(a).LAT_s / 3600)),    //Lat2
-                                                    (Entry.at(a).LON_d + (Entry.at(a).LON_m / 60) + (Entry.at(a).LON_s / 3600)))   //Long2
+                WaypointEntry.at(m_vectorPOS).DISTANCE =  ConvertDistance (
+                                        haversine(m_vectorPOS /*position*/, (WaypointEntry.at(m_vectorPOS - 1).LAT_d + (WaypointEntry.at(m_vectorPOS - 1).LAT_m / 60) + (WaypointEntry.at(m_vectorPOS - 1).LAT_s / 3600)),   //Lat1
+                                                    (WaypointEntry.at(m_vectorPOS - 1).LON_d + (WaypointEntry.at(m_vectorPOS - 1).LON_m / 60) + (WaypointEntry.at(m_vectorPOS - 1).LON_s / 3600)),    //Long1
+                                                    (WaypointEntry.at(m_vectorPOS).LAT_d + (WaypointEntry.at(m_vectorPOS).LAT_m / 60) + (WaypointEntry.at(m_vectorPOS).LAT_s / 3600)),    //Lat2
+                                                    (WaypointEntry.at(m_vectorPOS).LON_d + (WaypointEntry.at(m_vectorPOS).LON_m / 60) + (WaypointEntry.at(m_vectorPOS).LON_s / 3600)))   //Long2
                                                         );
                 }
                 else
@@ -200,11 +206,11 @@ public:
 
             else    // If only one waypoint: 
             {
-                Entry.at(a).DISTANCE = 0.0;
+                WaypointEntry.at(m_vectorPOS).DISTANCE = 0.0;
             }
 
                 // column two info:
-            if (a >= 1) 
+            if (m_vectorPOS >= 1) 
             {
                 ImGui::SameLine(); ImGui::Dummy(ImVec2(50.0f, 0.0f)); ImGui::SameLine();
                 ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor::HSV(0.25f, 0.7f, 0.7f, 0.3f));
@@ -213,20 +219,20 @@ public:
                 {
 
                     int value = 15;
-                    Entry.at(a).FUEL = (int)(value * Entry.at(a).DISTANCE);
-                    ImGui::InputFloat("  Leg (KM)        ", &Entry.at(a).DISTANCE, NULL, NULL, "%.3f");
+                    WaypointEntry.at(m_vectorPOS).FUEL = (int)(value * WaypointEntry.at(m_vectorPOS).DISTANCE);
+                    ImGui::InputFloat("  Leg (KM)        ", &WaypointEntry.at(m_vectorPOS).DISTANCE, NULL, NULL, "%.3f");
                     ImGui::SameLine();
-                    ImGui::InputInt("  Approx. Fuel Used (LBS)", &Entry.at(a).FUEL, NULL, NULL);
+                    ImGui::InputInt("  Approx. Fuel Used (LBS)", &WaypointEntry.at(m_vectorPOS).FUEL, NULL, NULL);
 
                 }
                 else
                 {
 
                     int value = 15;  
-                    Entry.at(a).FUEL = (int)(value * Entry.at(a).DISTANCE);
-                    ImGui::InputFloat("  Leg (NM)        ", &Entry.at(a).DISTANCE, NULL, NULL, "%.1f");
+                    WaypointEntry.at(m_vectorPOS).FUEL = (int)(value * WaypointEntry.at(m_vectorPOS).DISTANCE);
+                    ImGui::InputFloat("  Leg (NM)        ", &WaypointEntry.at(m_vectorPOS).DISTANCE, NULL, NULL, "%.1f");
                     ImGui::SameLine();
-                    ImGui::InputInt("  Approx. Fuel Used (LBS)", &Entry.at(a).FUEL, NULL, NULL);
+                    ImGui::InputInt("  Approx. Fuel Used (LBS)", &WaypointEntry.at(m_vectorPOS).FUEL, NULL, NULL);
 
                 }
 
@@ -296,9 +302,9 @@ public:
         //testMarker++; // place or turn this on to test loop count
 
         // distance between latitudes and longitudes
-    float dLat = ((lat2 * (signNorthSouth(Entry.at(position).NS))) - (lat1 * (signNorthSouth(Entry.at(position - 1).NS)))) *
+    float dLat = ((lat2 * (signNorthSouth(WaypointEntry.at(position).NS))) - (lat1 * (signNorthSouth(WaypointEntry.at(position - 1).NS)))) *
         M_PI / 180.0f;
-    float dLon = ((lon2 * (signEastWest(Entry.at(position).EW))) - (lon1 * (signEastWest(Entry.at(position - 1).EW)))) *
+    float dLon = ((lon2 * (signEastWest(WaypointEntry.at(position).EW))) - (lon1 * (signEastWest(WaypointEntry.at(position - 1).EW)))) *
         M_PI / 180.0f;
 
 // convert to radians
@@ -323,13 +329,13 @@ public:
 
     void totalFuelCalc()
     {
-        totalFuelUsed = std::accumulate(Entry.begin(), Entry.end(), 0,
+        totalFuelUsed = std::accumulate(WaypointEntry.begin(), WaypointEntry.end(), 0,
         [](int sum, const WPT& e) { return sum + e.FUEL; });    // Lambda here....no idea exactly how it works!!!
     }
 
     void totalDistanceCalc()
     {
-        totalDistance = std::accumulate(Entry.begin(), Entry.end(), 0.0f,
+        totalDistance = std::accumulate(WaypointEntry.begin(), WaypointEntry.end(), 0.0f,
         [](float sum, const WPT& e) { return sum + e.DISTANCE; });    // Lambda here....no idea exactly how it works!!!
     }
 

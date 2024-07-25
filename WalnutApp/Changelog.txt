@@ -1,0 +1,13 @@
+Create new branch:
+July 25, 2024 - Create test-1 branch and edit description in config. This will be where I fix some
+messy code and bugs, while leaving the working code alone.
+
+
+test-1 branch:
+July 25, 2024 - create better variable names for waypoint change tracking, move to MathFunctions.h 
+and streamline use in function DrawEntry...does not need to be passed in, since I can access the variable
+directly since it is outside function scope.
+
+Differentiated the difference between the position inside the vector, and actual waypoint ID. Only the former
+exists for now. Plan is to track IDs so they can be sorted or moved around inside the vector.
+

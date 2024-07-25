@@ -48,7 +48,7 @@ public:
                     );
 
                 //matrix of possible waypoint IDs to max 100
-            static int wptID = 0;
+            static int VectorPosition = 0;
             
             
             ImGui::Text("Dear_ImGui Version Info: (%s) (%d)", IMGUI_VERSION, IMGUI_VERSION_NUM);
@@ -173,7 +173,6 @@ public:
                 }
             }
 
-
             // Component that allows for format/spacing that is invisible
             //------------------------------------------------------------
             {
@@ -191,15 +190,12 @@ public:
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0.25f, 0.8f, 0.8f));
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.25f, 1.0f, 1.0f));
 
-            // switch used to control emplace_back of new waypoint in // MathFunctions.h //
-            static bool b_IsNewWaypoint = false;
-            static int WaypointCounter = 0;
 
             // BUTTON CREATES NEW WAYPOINT ENTRY:
-            if (ImGui::Button(" + ") && (WaypointCounter < 100)) // size guard!
+            if (ImGui::Button(" + ") && (WaypointCounter < 100)) // button click size over-run guard!
             {
-                WaypointCounter++;  // Add new waypoint items.
-                b_IsNewWaypoint = true; // Only Emplace_back on button click for new waypoint, passed into call
+                WaypointCounter++;  // Keep track of new waypoint items. Not the same as waypoint ID
+                b_IsNewWaypoint = true; // Only Emplace_back on button click for new waypoint
             }
             ImGui::SameLine(); ImGui::Text(" Add Waypoint (%d total, MAX = 100)", WaypointCounter);
 
@@ -211,14 +207,16 @@ public:
             ImGui::Separator();
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
         }
-
-            for (wptID = 0; wptID < WaypointCounter; wptID++)
+            
+            // Generates number of waypoint items to draw based on "+" CREATE clicks.
+            // NOTE: This doesn't really ID the waypoint although it is used that way for now.
+            for (VectorPosition = 0; VectorPosition < WaypointCounter; VectorPosition++)
             {
-                //wptID = i;  // Note - ITEM is instantiated in EntryPoint.h before the while-loop.
-                item.drawEntry(wptID, units, b_IsNewWaypoint); // Modular I/O float display for WPT editing
+                // Note - ITEM is instantiated in EntryPoint.h before the while-loop.
+                item.drawEntry(VectorPosition, units); // Modular draw call, only for the number of waypoints
             }
 
-            if (wptID >= 2)
+            if (VectorPosition >= 2)
             {
                 item.totalFuelCalc();
                 item.totalDistanceCalc();
