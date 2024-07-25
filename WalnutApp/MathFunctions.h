@@ -95,13 +95,15 @@ public:
     }
 
         // FUNCTION - pass in var which represents waypoint number. Helps with screen element IDs as well, for the hash.
-    void drawEntry(int a, int units, bool& newWPT)
+    void drawEntry(int a, int units, bool& b_IsNewWPT)
     {
-        if (newWPT) // This check mechanism allows us to only push back an element ONCE when creating a new waypoint, to avoid a race condition.
+        if (b_IsNewWPT) // This check mechanism allows us to only push back an element ONCE when creating a new waypoint, to avoid a race condition.
         {
             // creates, and initializes with zero for the input box.
             Entry.emplace_back(lat_d, lat_m, lat_s, lon_d, lon_m, lon_s, profile, distance, fuel, ns, ew);
-            newWPT = false;
+            testMarker++;
+            b_IsNewWPT = false;
+            //b_IsNewWaypoint = false; // This is the proper way to do it, I think. Why pass bool value in? Just ref it or use directly
         }
 
         // SIZE TEST:
@@ -291,7 +293,7 @@ public:
     
         
 
-        testMarker++;
+        //testMarker++; // place or turn this on to test loop count
 
         // distance between latitudes and longitudes
     float dLat = ((lat2 * (signNorthSouth(Entry.at(position).NS))) - (lat1 * (signNorthSouth(Entry.at(position - 1).NS)))) *

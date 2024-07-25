@@ -57,9 +57,15 @@ WISH LIST:
 
 - Allow user to pull up a data window for the aircraft. "View Data"
 
+- How could the aircraft configuration code be made generic so that external data could fit all scenarios? 
+	IE ... if I want to plug in another aircraft I don't have to create dedicated code?
+
 
 CLEARED:
 
 - DONE - Deal with North(1), South(-1), East(1), West(-1) so that "-1" affects the haversine output properly.
 
 - DONE - Stop vector emplace_back race condition in which action occurred EACH while-loop. Vector kept growing!
+
+- DONE - Output not showing due to too close to window edge - [NOTE: Haversine function loop check "testmarker" is showing odd behaviour and not incrementing through the loop as expected.
+	Did I fix this already???] - NO, not fixed!

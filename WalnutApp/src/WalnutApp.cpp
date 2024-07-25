@@ -173,7 +173,6 @@ public:
                 }
             }
 
-            ImGui::Text("Test for Haversine Loop Function: %d", testMarker); //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<---------
 
             // Component that allows for format/spacing that is invisible
             //------------------------------------------------------------
@@ -182,6 +181,10 @@ public:
                 ImGui::Separator(); // -----------------------------------------------------------
                 ImGui::Dummy(ImVec2(0.0f, 10.0f));
             }
+            
+            //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<--------- turn this on to check loop count
+            ImGui::Text("Test for Loop Function Increments: %d", testMarker); 
+            //testMarker++;
 
             // Make the button inside the push tags an obvious color
         ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0.25f, 0.7f, 0.4f));
@@ -189,16 +192,16 @@ public:
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.25f, 1.0f, 1.0f));
 
             // switch used to control emplace_back of new waypoint in // MathFunctions.h //
-            static bool newWaypoint = false;
-            static int counter = 0;
+            static bool b_IsNewWaypoint = false;
+            static int WaypointCounter = 0;
 
             // BUTTON CREATES NEW WAYPOINT ENTRY:
-            if (ImGui::Button(" + ") && (counter < 100)) // size guard!
+            if (ImGui::Button(" + ") && (WaypointCounter < 100)) // size guard!
             {
-                counter++;  // Add new waypoint items.
-                newWaypoint = true; // Only Emplace_back on button click for new waypoint, passed into call
+                WaypointCounter++;  // Add new waypoint items.
+                b_IsNewWaypoint = true; // Only Emplace_back on button click for new waypoint, passed into call
             }
-            ImGui::SameLine(); ImGui::Text(" Add Waypoint (%d total, MAX = 100)", counter);
+            ImGui::SameLine(); ImGui::Text(" Add Waypoint (%d total, MAX = 100)", WaypointCounter);
 
         ImGui::PopStyleColor(3);
 
@@ -209,10 +212,10 @@ public:
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
         }
 
-            for (wptID = 0; wptID < counter; wptID++)
+            for (wptID = 0; wptID < WaypointCounter; wptID++)
             {
                 //wptID = i;  // Note - ITEM is instantiated in EntryPoint.h before the while-loop.
-                item.drawEntry(wptID, units, newWaypoint); // Modular I/O float display for WPT editing
+                item.drawEntry(wptID, units, b_IsNewWaypoint); // Modular I/O float display for WPT editing
             }
 
             if (wptID >= 2)
