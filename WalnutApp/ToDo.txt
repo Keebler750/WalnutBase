@@ -1,44 +1,63 @@
-- WIP (FUNCTIONAL) - Validate (Clamp) waypoint input to limit latitude to +-90 and longitude to +- 180 degrees
-
-- we pass 'a' into drawEntry in MathFunctions.h in a pretty lazy fashion. Name the vars better!!!
+PRIORITY:
 
 - BUG **** Fuel used changes with conversion of nm/km.... it should use the same fuel!!
 
-- How to deal with limit cases for 'antipodes?'
+- BUG - HAVERSINE or other calcs constantly recalc in the loop, wasting computing time.
 
 - Take all calculations out of the render loop.
 
-- Add 'Insert' and 'Delete' waypoint options
+
+TO DO:
+
+- WIP (FUNCTIONAL) - Validate (Clamp) waypoint input to limit latitude to +-90 and longitude to +- 180 degrees
 
 - WIP - Menu structure.
 
-- Get app to communicate with DCS to avoid manual waypoint inputs.
+- How to deal with limit cases for 'antipodes?'
 
+- we pass 'a' into drawEntry in MathFunctions.h in a pretty lazy fashion. Name the vars better!!!
+
+- Can ImGui be updated to the latest version without breaking Walnut?
+
+- Add 'Insert' and 'Delete' waypoint options
+
+- Scratchpad for copy/pasting waypoint data as an interim to actual input from DCS
+
+- Use more sophisticated formatting, perhaps Tables, Tabs, etc.
+
+- Relate Editor map to real coords? CONVERSION Metric (x,y) to LAT/LONT will require ---> xxxxxx deg LAT = 1.0 meters and xxxxxx deg LONG = 1.0 meters
+	need the converted LAT/LONG of each map Bullseye/Origin and then the x and y inside the .miz file for each waypoint.
+
+
+FEATURES:
+
+- Sequential (0, 1, 2 ...) versus Named (2, 1, 3 ... alpha, gamma, beta (etc) ) waypoints for flexibility in the stack
+	for route planning. That is to say, the route may not be flown sequentially.
+	
 - File handling to Save and Load prior work.
 
 - Add Alternate Landing/Refuel waypoints and calculations.
 
-- Use more sophisticated formatting, perhaps Tables, Tabs, etc.
 
-- Can ImGui be updated to the latest version without breaking Walnut?
+WISH LIST:
 
 - Is it possible to draw outputs on an integral map?
 
 - >>>> Flight and Fuel profiles needed for multiple aircraft.
 
-- Scratchpad for copy/pasting waypoint data as an interim to actual input from DCS
-
-- Allow user to pull up a data window for the aircraft. "View Data"
-
 - Climb and Decel ramps added to legs; Leg subprofiles and graphics?
 
 - How to generate Mission Planner/Kneeboard info?
 
+- Make dropdown list of Maps, and attached Origin LAT/LONG in decimal degrees would probably be best.
+
+- Get app to communicate with DCS to avoid manual waypoint inputs.
+
+- Allow user to pull up a data window for the aircraft. "View Data"
+
+
+CLEARED:
+
 - DONE - Deal with North(1), South(-1), East(1), West(-1) so that "-1" affects the haversine output properly.
 
 - DONE - Stop vector emplace_back race condition in which action occurred EACH while-loop. Vector kept growing!
-
-- CONVERSION Metric (x,y) to LAT/LONT will require ---> 0.00000900776 deg LAT = 1.0 meters and 0.000011567285 deg LONG = 1.0 meters
-	need the converted LAT/LONG of each map Bullseye/Origin and then the x and y inside the .miz file for each waypoint.
-
-- Make dropdown list of Maps, and attached Origin LAT/LONG in decimal degrees would probably be best.
