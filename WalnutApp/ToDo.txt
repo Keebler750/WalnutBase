@@ -1,8 +1,8 @@
 - WIP (FUNCTIONAL) - Validate (Clamp) waypoint input to limit latitude to +-90 and longitude to +- 180 degrees
 
-- BUG - HAVERSINE or other calcs constantly recalc in the loop, wasting computing time.
+- we pass 'a' into drawEntry in MathFunctions.h in a pretty lazy fashion. Name the vars better!!!
 
-- BUG *** when changing unit prefs, it is affecting total fuel used per leg etc (should be same) due to order of calls. 
+- BUG **** Fuel used changes with conversion of nm/km.... it should use the same fuel!!
 
 - How to deal with limit cases for 'antipodes?'
 
@@ -38,11 +38,7 @@
 
 - DONE - Stop vector emplace_back race condition in which action occurred EACH while-loop. Vector kept growing!
 
-- THIS IS NOT CORRECT:::::::CONVERSION Metric (x,y) to LAT/LONT will require ---> 0.00000900776 deg LAT = 1.0 meters 
-	and 0.000011567285 deg LONG = 1.0 meters need the converted LAT/LONG of each map Bullseye/Origin and then the x and y inside 
-	the .miz file for each waypoint.
+- CONVERSION Metric (x,y) to LAT/LONT will require ---> 0.00000900776 deg LAT = 1.0 meters and 0.000011567285 deg LONG = 1.0 meters
+	need the converted LAT/LONG of each map Bullseye/Origin and then the x and y inside the .miz file for each waypoint.
 
 - Make dropdown list of Maps, and attached Origin LAT/LONG in decimal degrees would probably be best.
-
-- Sequential (0, 1, 2 ...) versus Named (2, 1, 3 ... alpha, gamma, beta (etc) ) waypoints for flexibility in the stack
-	for route planning. That is to say, the route may not be flown sequentially.

@@ -1,0 +1,14 @@
+OUTLINE:
+
+"Units" item initialized  in MathFunctions.h, line 23
+
+Radio buttons set units ref at line 67 of WalnutApp.cpp
+
+Default is set to '2' which is nautical miles
+
+ >>> NOTE: Do I need to pass units by param into DrawEntry when I can just use a ref?
+
+ Units passed into DrawEntry(), MathFunctions.h on line 98 for use in calcs
+
+ Line 175, MathFunctions.h is start of calcs using units....this code could be streamlined to call a quick conversion function
+
