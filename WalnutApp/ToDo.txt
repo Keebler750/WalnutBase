@@ -1,6 +1,6 @@
 PRIORITY:
 
-- BUG **** Fuel used changes with conversion of nm/km.... it should use the same fuel!!
+- 001 - BUG **** Fuel used changes with conversion of nm/km.... it should use the same fuel!!
 
 - BUG - HAVERSINE or other calcs constantly recalc in the loop, wasting computing time.
 
