@@ -15,9 +15,10 @@ TO DO:
 
 - WIP - Menu structure.
 
-- How to deal with limit cases for 'antipodes?'
+- WIP - Deal with North(1), South(-1), East(1), West(-1) so that "-1" affects the haversine output properly.
+	This is overly complex due to the inability to attribute specific values to "ImGui::Combo" drop down. Can this be re-written?
 
-- we pass 'a' into drawEntry in MathFunctions.h in a pretty lazy fashion. Name the vars better!!!
+- How to deal with limit cases for 'antipodes?'
 
 - Can ImGui be updated to the latest version without breaking Walnut?
 
@@ -63,9 +64,11 @@ WISH LIST:
 
 CLEARED:
 
-- DONE - Deal with North(1), South(-1), East(1), West(-1) so that "-1" affects the haversine output properly.
-
 - DONE - Stop vector emplace_back race condition in which action occurred EACH while-loop. Vector kept growing!
 
-- DONE - Output not showing due to too close to window edge - [NOTE: Haversine function loop check "testmarker" is showing odd behaviour and not incrementing through the loop as expected.
-	Did I fix this already???] - NO, not fixed!
+- DONE - Output not showing due to too close to window edge - [NOTE: Haversine function loop check "testmarker" is 
+	showing odd behaviour and not incrementing through the loop as expected. Did I fix this already???] - NO, not fixed!
+
+- DONE - we pass 'a' into drawEntry in MathFunctions.h in a pretty lazy fashion. Name the vars better!!! 
+	[Decided to use vector position naming so that I can hash-label the waypoint IDs later to move and edit the matrix]
+

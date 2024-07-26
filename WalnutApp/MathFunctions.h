@@ -118,7 +118,7 @@ public:
             ImGui::PushID(m_vectorPOS);     //This differentiates the ImGui data labels through each loop 
                                             // to avoid dupes because it is a HASH of PushID + DataLabel
 
-            testMarker++;
+            //testMarker++; //used to test the loop incrementation. Output is on WalnutApp.cpp near the "+" button
 
             //WPT LAT:
             ImGui::Text("LAT   ");
@@ -184,6 +184,8 @@ public:
             { 
                 if (units == 1)         // KM
                 {
+                // This bunch of bafflegab filters all field entry types of the waypoints through the haversine and spits out a distance.
+                // Looks really clunky but is adding and processing each field. Every single bracket and comma matters to the output
                 WaypointEntry.at(m_vectorPOS).DISTANCE = haversine(m_vectorPOS /*position*/, (WaypointEntry.at(m_vectorPOS - 1).LAT_d + (WaypointEntry.at(m_vectorPOS - 1).LAT_m / 60) + (WaypointEntry.at(m_vectorPOS - 1).LAT_s / 3600)),    //Lat1
                                                     (WaypointEntry.at(m_vectorPOS - 1).LON_d + (WaypointEntry.at(m_vectorPOS - 1).LON_m / 60) + (WaypointEntry.at(m_vectorPOS - 1).LON_s / 3600)),    //Long1
                                                     (WaypointEntry.at(m_vectorPOS).LAT_d + (WaypointEntry.at(m_vectorPOS).LAT_m / 60) + (WaypointEntry.at(m_vectorPOS).LAT_s / 3600)),    //Lat2
@@ -294,31 +296,31 @@ public:
         // C++ code for the haversine formula
         // Core math for distance calc from position data. Requires decimal degrees to four place precision.
     static float haversine(int position, float lat1, float lon1, float lat2, float lon2 )
-{
-    //int position = 0; // TEST, crashes due to vector pos.
+        {
+            //int position = 0; // TEST, crashes due to vector pos.
     
         
 
-        //testMarker++; // place or turn this on to test loop count
+        testMarker++; // place or turn this on to test loop count
 
-        // distance between latitudes and longitudes
-    float dLat = ((lat2 * (signNorthSouth(WaypointEntry.at(position).NS))) - (lat1 * (signNorthSouth(WaypointEntry.at(position - 1).NS)))) *
-        M_PI / 180.0f;
-    float dLon = ((lon2 * (signEastWest(WaypointEntry.at(position).EW))) - (lon1 * (signEastWest(WaypointEntry.at(position - 1).EW)))) *
-        M_PI / 180.0f;
+            // distance between latitudes and longitudes
+            float dLat = ((lat2 * (signNorthSouth(WaypointEntry.at(position).NS))) - (lat1 * (signNorthSouth(WaypointEntry.at(position - 1).NS)))) *
+                M_PI / 180.0f;
+            float dLon = ((lon2 * (signEastWest(WaypointEntry.at(position).EW))) - (lon1 * (signEastWest(WaypointEntry.at(position - 1).EW)))) *
+                M_PI / 180.0f;
 
-// convert to radians
-    lat1 = (lat1)*M_PI / 180.0f;
-    lat2 = (lat2)*M_PI / 180.0f;
+            // convert to radians
+            lat1 = (lat1)*M_PI / 180.0f;
+            lat2 = (lat2)*M_PI / 180.0f;
 
-    // apply formulae
-    float a = pow(sin(dLat / 2.0f), 2.0f) +
-        pow(sin(dLon / 2.0f), 2.0f) *
-        cos(lat1) * cos(lat2);
-    float rad = 6371.0f;
-    float c = 2.0f * asin(sqrt(a));
-    return rad * c; // Calculated distance between the two points.
-}
+            // apply formulae
+            float a = pow(sin(dLat / 2.0f), 2.0f) +
+                pow(sin(dLon / 2.0f), 2.0f) *
+                cos(lat1) * cos(lat2);
+            float rad = 6371.0f;
+            float c = 2.0f * asin(sqrt(a));
+            return rad * c; // Calculated distance between the two points.
+        }
 
         // Convert km to nm when needed
     float ConvertDistance(float fResult)
