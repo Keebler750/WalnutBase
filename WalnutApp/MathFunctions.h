@@ -110,18 +110,18 @@ public:
 
     }
 
-        // FUNCTION - pass in var which represents waypoint number. Helps with screen element IDs as well, for the hash.
+        // FUNCTION - pass in var which represents waypoint number FOR NOW. Helps with screen element IDs as well, for the hash.
     void drawEntry(int m_vectorPOS, int units)
     {
         if (b_IsNewWaypoint) // This check mechanism allows us to only push back an element ONCE when creating a new waypoint, to avoid a race condition.
         {
-            // creates, and initializes with zero for the input box.
+            // create a spot in the vector, and initializes with zero for the input box.
             WaypointEntry.emplace_back(lat_d, lat_m, lat_s, lon_d, lon_m, lon_s, profile, distance, fuel, ns, ew);
             
             b_IsNewWaypoint = false; // reset until value is made true again by button press to create waypoint
         }
 
-        // SIZE TEST:
+        // SIZE TEST to make sure vector is not growing due to loop:
         // ImGui::Text("Entry size: %d", Entry.size());
         ImGui::PushItemWidth(scaledElementSize); // sets input box width until the POP below.
 
@@ -213,8 +213,8 @@ public:
                     ImGui::InputFloat("  Leg (KM)        ", &WaypointEntry.at(m_vectorPOS).DISTANCE, NULL, NULL, "%.0f");
                     ImGui::SameLine();
                     ImGui::InputInt("  Approx. Fuel Used (LBS)", &WaypointEntry.at(m_vectorPOS).FUEL, NULL, NULL);
-
                 }
+
                 else if (units == NM) // DISPLAY BASED ON UNIT PREFS:
                 {
                     int fuelRateValue = 15;
@@ -229,7 +229,6 @@ public:
                     ImGui::InputFloat("  Leg (NM)        ", &WaypointEntry.at(m_vectorPOS).DISTANCE, NULL, NULL, "%.0f");
                     ImGui::SameLine();
                     ImGui::InputInt("  Approx. Fuel Used (LBS)", &WaypointEntry.at(m_vectorPOS).FUEL, NULL, NULL);
-
                 }
 
                 else
