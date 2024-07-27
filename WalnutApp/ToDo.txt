@@ -1,6 +1,9 @@
 PRIORITY:
 
-- BUG **** Fuel used changes with conversion of nm/km.... it should use the same fuel!!
+- BUG **** Fuel used changes with conversion of nm/km.... it should use the same fuel!! SEE: FUELandUNITSdiagram.tif (Desktop) and UnitsIssue.txt (this Project)
+
+		a) Need to understand all the types of calculations and how they relate
+		b) Would be nice to make a core implementation and an external way to configure possible user scenarios that output non-dimensional data to the core
 
 - BUG - HAVERSINE or other calcs constantly recalc in the loop, wasting computing time.
 
