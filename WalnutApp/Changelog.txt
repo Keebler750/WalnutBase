@@ -4,10 +4,26 @@ messy code and bugs, while leaving the working code alone.
 
 
 test-1 branch:
-July 25, 2024 - create better variable names for waypoint change tracking, move to MathFunctions.h 
+July 25, 2024 
+- create better variable names for waypoint change tracking, move to MathFunctions.h 
 and streamline use in function DrawEntry...does not need to be passed in, since I can access the variable
 directly since it is outside function scope.
 
-Differentiated the difference between the position inside the vector, and actual waypoint ID. Only the former
+- Differentiated the difference between the position inside the vector, and actual waypoint ID. Only the former
 exists for now. Plan is to track IDs so they can be sorted or moved around inside the vector.
+
+
+test-1 branch:
+July 27, 2024
+- ## SQUASHED:: bug (Issue 001) **** Fuel used changes with conversion of nm/km.... it should use the same fuel!!
+- ## fixed by addressing how distances and fuel rate calcs are related via conversion factors (rate is in Lbs/NM, and haversine spits out KM)
+		SEE: FUELandUNITSdiagram.tif (Desktop) and UnitsIssue.txt (this Project)
+
+		a) Need to understand all the types of calculations and how they relate
+		b) PARTIAL - Would be nice to make a core implementation and an external way to configure possible user scenarios that output non-dimensional data to the core
+
+- DONE - Outline the processes attached to the Fuel Use bug - Fuel Rate needed to be converted wrt 'units' as well!
+- DONE - re-write distance and fuel calcs
+- DONE - Change some more variable names for readability
+
 

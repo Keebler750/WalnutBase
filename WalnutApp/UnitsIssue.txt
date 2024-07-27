@@ -1,4 +1,5 @@
-OUTLINE:
+OUTLINE: ISSUE 001
+STATUS: DONE, July 27, 2024
 
 "Units" item initialized  in MathFunctions.h, line 23
 
@@ -12,3 +13,6 @@ Default is set to '2' which is nautical miles
 
  Line 175, MathFunctions.h is start of calcs using units....this code could be streamlined to call a quick conversion function
 
+ ## Fuel rate and distances needed to be addressed wrt conversion factors in ALL calcs in order to work.
+
+ 

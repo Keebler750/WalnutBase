@@ -1,9 +1,10 @@
+CURRENT SESSION:
+
+
+
+
+
 PRIORITY:
-
-- BUG **** Fuel used changes with conversion of nm/km.... it should use the same fuel!! SEE: FUELandUNITSdiagram.tif (Desktop) and UnitsIssue.txt (this Project)
-
-		a) Need to understand all the types of calculations and how they relate
-		b) Would be nice to make a core implementation and an external way to configure possible user scenarios that output non-dimensional data to the core
 
 - BUG - HAVERSINE or other calcs constantly recalc in the loop, wasting computing time.
 
@@ -20,6 +21,10 @@ TO DO:
 
 - WIP - Deal with North(1), South(-1), East(1), West(-1) so that "-1" affects the haversine output properly.
 	This is overly complex due to the inability to attribute specific values to "ImGui::Combo" drop down. Can this be re-written?
+
+- WIP - Look at type-conversion issues with int, float and/or double throughout the code
+
+- Can I create a saved decimal degree Lat/Long in the vector for easy re-use?
 
 - How to deal with limit cases for 'antipodes?'
 
@@ -66,6 +71,9 @@ WISH LIST:
 
 
 CLEARED:
+
+- DONE - ISSUE 001 - Bug squashed, fuel use was changing when distance unit prefs changed. 
+Now fuel use stays same for same distance, converted or not.
 
 - DONE - Stop vector emplace_back race condition in which action occurred EACH while-loop. Vector kept growing!
 

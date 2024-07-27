@@ -49,7 +49,8 @@ public:
 
                 //matrix of possible waypoint IDs to max 100
             static int VectorPosition = 0;
-            
+
+
             
             ImGui::Text("Dear_ImGui Version Info: (%s) (%d)", IMGUI_VERSION, IMGUI_VERSION_NUM);
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
@@ -63,9 +64,12 @@ public:
             ImGui::SliderFloat("Font Size", &fontSize, 0.6f, 1.2f, "%.2f");
             ImGui::SetWindowFontScale(fontSize);
             ImGui::SameLine(); ImGui::Dummy(ImVec2(20.0f, 0.0f)); ImGui::SameLine();
+
+
+            // UNITS are set here:
             ImGui::Text("Units: "); ImGui::SameLine();
-            ImGui::RadioButton("KM", &units, 1); ImGui::SameLine();
-            ImGui::RadioButton("NM", &units, 2); //ImGui::SameLine();
+            ImGui::RadioButton("KM", &units, KM); ImGui::SameLine();
+            ImGui::RadioButton("NM", &units, NM); //ImGui::SameLine();
 
 
         // Component that allows for format/spacing that is invisible
