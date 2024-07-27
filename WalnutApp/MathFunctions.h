@@ -145,7 +145,7 @@ public:
             ImGui::InputFloat("SEC    ##LAT1", &WaypointEntry.at(m_vectorPOS).LAT_s, NULL, NULL, "%.5f");
             WaypointEntry.at(m_vectorPOS).LAT_s = std::clamp(WaypointEntry.at(m_vectorPOS).LAT_s, 0.0f, 60.0f); // max 60 seconds in a minute
 
-                // column two info:
+                // column two input and display: Flight profile
             if (m_vectorPOS >= 1)
             {
                 ImGui::SameLine(); ImGui::Dummy(ImVec2(50.0f, 0.0f)); ImGui::SameLine();
@@ -211,13 +211,13 @@ public:
                 WaypointEntry.at(m_vectorPOS).DISTANCE = 0.0;
             }
 
-                // column two info:
-            if (m_vectorPOS >= 1) 
+            // column two input and display: Leg distance and fuel used
+            if (m_vectorPOS >= 1)
             {
                 ImGui::SameLine(); ImGui::Dummy(ImVec2(50.0f, 0.0f)); ImGui::SameLine();
                 ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor::HSV(0.25f, 0.7f, 0.7f, 0.3f));
 
-                if (units == 1)
+                if (units == 1) // DISPLAY BASED ON UNIT PREFS:
                 {
 
                     int value = 15;
@@ -227,7 +227,7 @@ public:
                     ImGui::InputInt("  Approx. Fuel Used (LBS)", &WaypointEntry.at(m_vectorPOS).FUEL, NULL, NULL);
 
                 }
-                else
+                else // DISPLAY BASED ON UNIT PREFS:
                 {
 
                     int value = 15;  
