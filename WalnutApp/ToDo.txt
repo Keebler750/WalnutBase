@@ -15,6 +15,10 @@ PRIORITY:
 
 TO DO:
 
+- Variables are scattered EVERYWHERE.....come up with a plan.
+
+- WalnutApp.cpp needs a serious re-write.....stuff is everywhere
+
 - WIP (FUNCTIONAL) - Validate (Clamp) waypoint input to limit latitude to +-90 and longitude to +- 180 degrees
 
 - WIP - Menu structure.

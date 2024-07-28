@@ -1,7 +1,7 @@
 #include "Walnut/Application.h"
 #include "Walnut/EntryPoint.h"
 
-//#include "../MathFunctions.h"
+#include "../MathFunctions.h"
 #include "Walnut/Image.h"
 //#include <vector>
 
@@ -47,11 +47,6 @@ public:
                     ImGuiWindowFlags_NoMove
                     );
 
-                //matrix of possible waypoint IDs to max 100
-            static int VectorPosition = 0;
-
-
-            
             ImGui::Text("Dear_ImGui Version Info: (%s) (%d)", IMGUI_VERSION, IMGUI_VERSION_NUM);
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
             ImGui::Text("Set Options:");
@@ -80,10 +75,12 @@ public:
                 ImGui::Dummy(ImVec2(0.0f, 10.0f));
             }
 
-                // FUEL variables: ///
-                //////////////////////
+            //This is not used anywhere yet other than radio buttons.
             enum AircraftType { None, F18, F15, A10 };    
-            static int aircraft = F18; // Default set to F18 here...
+            static int aircraft = F18; // Default set to F18 here... 
+
+            // FUEL variables: ///
+            //////////////////////
             //static float startFuel = 0; // Moved to header file...
             static bool b_internal = true;
             static bool b_left = false;
@@ -214,6 +211,11 @@ public:
             
             // Generates number of waypoint items to draw based on "+" CREATE clicks.
             // NOTE: This doesn't really ID the waypoint although it is used that way for now.
+
+
+            // This is used as the position index inside the vector of waypoint data.
+            static int VectorPosition = 0;
+
             for (VectorPosition = 0; VectorPosition < WaypointCounter; VectorPosition++)
             {
                 // Note - ITEM is instantiated in EntryPoint.h before the while-loop.

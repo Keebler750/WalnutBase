@@ -132,7 +132,7 @@ public:
 
             //testMarker++; //used to test the loop incrementation. Output is on WalnutApp.cpp near the "+" button
 
-            //INPUT AND DISPLAY WPT LAT:
+            //INPUT AND DISPLAY WPT LAT, including NORTH/SOUTH:
             ImGui::Text("LAT   ");
             ImGui::SameLine();
 
@@ -164,7 +164,7 @@ public:
                 ImGui::InputInt("  Flight Profile", &WaypointEntry.at(m_vectorPOS).PROFILE, NULL, NULL);
             }
 
-                //INPUT AND DISPLAY WPT LONG:
+                //INPUT AND DISPLAY WPT LONG, including EAST/WEST:
             ImGui::Text("LONG");
             ImGui::SameLine();
 
@@ -201,7 +201,7 @@ public:
 
                 if (units == KM) // DISPLAY BASED ON UNIT PREFS:
                 {
-                    int fuelRateValue = 15;
+                    float fuelRateValue = 15.0f;
 
                     WaypointEntry.at(m_vectorPOS).DISTANCE = haversine(m_vectorPOS /*position*/, 
                                                 (WaypointEntry.at(m_vectorPOS - 1).LAT_d + (WaypointEntry.at(m_vectorPOS - 1).LAT_m / 60) + (WaypointEntry.at(m_vectorPOS - 1).LAT_s / 3600)),    //Lat1
@@ -217,13 +217,13 @@ public:
 
                 else if (units == NM) // DISPLAY BASED ON UNIT PREFS:
                 {
-                    int fuelRateValue = 15;
+                    float fuelRateValue = 15.0f;
 
                     WaypointEntry.at(m_vectorPOS).DISTANCE = convert_NM * (haversine(m_vectorPOS /*position*/, 
-                                                (WaypointEntry.at(m_vectorPOS - 1).LAT_d + (WaypointEntry.at(m_vectorPOS - 1).LAT_m / 60) + (WaypointEntry.at(m_vectorPOS - 1).LAT_s / 3600)),   //Lat1
-                                                (WaypointEntry.at(m_vectorPOS - 1).LON_d + (WaypointEntry.at(m_vectorPOS - 1).LON_m / 60) + (WaypointEntry.at(m_vectorPOS - 1).LON_s / 3600)),    //Long1
-                                                (WaypointEntry.at(m_vectorPOS).LAT_d + (WaypointEntry.at(m_vectorPOS).LAT_m / 60) + (WaypointEntry.at(m_vectorPOS).LAT_s / 3600)),    //Lat2
-                                                (WaypointEntry.at(m_vectorPOS).LON_d + (WaypointEntry.at(m_vectorPOS).LON_m / 60) + (WaypointEntry.at(m_vectorPOS).LON_s / 3600))));
+                                                (WaypointEntry.at(m_vectorPOS - 1).LAT_d + (WaypointEntry.at(m_vectorPOS - 1).LAT_m / 60) + (WaypointEntry.at(m_vectorPOS - 1).LAT_s / 3600)),      //Lat1
+                                                (WaypointEntry.at(m_vectorPOS - 1).LON_d + (WaypointEntry.at(m_vectorPOS - 1).LON_m / 60) + (WaypointEntry.at(m_vectorPOS - 1).LON_s / 3600)),      //Long1
+                                                (WaypointEntry.at(m_vectorPOS).LAT_d + (WaypointEntry.at(m_vectorPOS).LAT_m / 60) + (WaypointEntry.at(m_vectorPOS).LAT_s / 3600)),      //Lat2
+                                                (WaypointEntry.at(m_vectorPOS).LON_d + (WaypointEntry.at(m_vectorPOS).LON_m / 60) + (WaypointEntry.at(m_vectorPOS).LON_s / 3600))));    //Long2
 
                     WaypointEntry.at(m_vectorPOS).FUEL = (int)(fuelRateValue * WaypointEntry.at(m_vectorPOS).DISTANCE); // NOTE: Distance already converted once.
                     ImGui::InputFloat("  Leg (NM)        ", &WaypointEntry.at(m_vectorPOS).DISTANCE, NULL, NULL, "%.0f");

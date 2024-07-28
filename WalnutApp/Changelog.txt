@@ -27,3 +27,6 @@ July 27, 2024
 - DONE - Change some more variable names for readability
 
 
+test-1 branch:
+July 28, 2024
+- convert fuel rate var to float to allow application of conversion factor which caused truncation as an int.
