@@ -118,13 +118,16 @@ public:
 
             ImGui::Text("Waypoint : %d", m_vectorPOS); //
 
-            ImGui::PushID(m_vectorPOS);     //This differentiates the ImGui data labels through each loop 
-                                            // to avoid dupes because it is a HASH of PushID + DataLabel
+            
+             //This differentiates the ImGui data labels through each loop
+            // to avoid dupes because it is a HASH of PushID + DataLabel
+            ImGui::PushID(m_vectorPOS);     
 
             //testMarker++; //used to test the loop incrementation. Output is on WalnutApp.cpp near the "+" button
 
-            //INPUT AND DISPLAY WPT LAT, including NORTH/SOUTH:
-            ImGui::Text("LAT   ");
+                    //INPUT AND DISPLAY WPT LAT, including NORTH/SOUTH:
+                    ImGui::Text("LAT   ");
+
             ImGui::SameLine();
 
                 ImGui::PushItemWidth(scaledElementSize);/// width for combo button
@@ -133,31 +136,49 @@ public:
                     {
                         WaypointEntry.at(m_vectorPOS).NS = WaypointEntry.at(m_vectorPOS).NS;
                     }
-                    ImGui::SameLine();
+
+                ImGui::SameLine();
 
                 ImGui::PopItemWidth(); ImGui::SameLine();
 
-            ImGui::InputFloat("DEG    ##LAT1", &WaypointEntry.at(m_vectorPOS).LAT_d, NULL, NULL, "%.5f");// NULL takes away the increment/decrement range creation button
-            WaypointEntry.at(m_vectorPOS).LAT_d = (std::clamp(WaypointEntry.at(m_vectorPOS).LAT_d, 0.0f, 90.0f)); // max 90 degreees of Latitude. 
 
-            ImGui::SameLine();
-            ImGui::InputFloat("MIN    ##LAT1", &WaypointEntry.at(m_vectorPOS).LAT_m, NULL, NULL, "%.5f");
-            WaypointEntry.at(m_vectorPOS).LAT_m = std::clamp(WaypointEntry.at(m_vectorPOS).LAT_m, 0.0f, 60.0f); // max 60 minutes in a degree
+                    // INPUT LATITUDE:
+                    // NULL takes away the increment/decrement range creation button
+                    // Clamp values: 90 Latitude degrees
+                    if (ImGui::InputFloat("DEG    ##LAT1", &WaypointEntry.at(m_vectorPOS).LAT_d, NULL, NULL, "%.5f"))
+                    {
+                        WaypointEntry.at(m_vectorPOS).LAT_d = (std::clamp(WaypointEntry.at(m_vectorPOS).LAT_d, 0.0f, 90.0f));
+                        testMarker++; //used to test the loop incrementation. Output is on WalnutApp.cpp near the "+" button
+                    }
 
-            ImGui::SameLine();
-            ImGui::InputFloat("SEC    ##LAT1", &WaypointEntry.at(m_vectorPOS).LAT_s, NULL, NULL, "%.5f");
-            WaypointEntry.at(m_vectorPOS).LAT_s = std::clamp(WaypointEntry.at(m_vectorPOS).LAT_s, 0.0f, 60.0f); // max 60 seconds in a minute
+                ImGui::SameLine();
 
-                // column two input and display: Flight profile
-            if (m_vectorPOS >= 1)
-            {
-                ImGui::SameLine(); ImGui::Dummy(ImVec2(50.0f, 0.0f)); ImGui::SameLine();
-                ImGui::InputInt("  Flight Profile", &WaypointEntry.at(m_vectorPOS).PROFILE, NULL, NULL);
-            }
+                    if (ImGui::InputFloat("MIN    ##LAT1", &WaypointEntry.at(m_vectorPOS).LAT_m, NULL, NULL, "%.5f"))
+                    {
+                        WaypointEntry.at(m_vectorPOS).LAT_m = std::clamp(WaypointEntry.at(m_vectorPOS).LAT_m, 0.0f, 60.0f);
+                        testMarker++; //used to test the loop incrementation. Output is on WalnutApp.cpp near the "+" button
+                    }
+
+                ImGui::SameLine();
+                    
+                    if (ImGui::InputFloat("SEC    ##LAT1", &WaypointEntry.at(m_vectorPOS).LAT_s, NULL, NULL, "%.5f"))
+                    {
+                        //WaypointEntry.at(m_vectorPOS).LAT_s = std::clamp(WaypointEntry.at(m_vectorPOS).LAT_s, 0.0f, 60.0f);
+                        testMarker++; //used to test the loop incrementation. Output is on WalnutApp.cpp near the "+" button
+                    }
+
+                    // column two input and display: Flight profile
+                    if (m_vectorPOS >= 1)
+                    {
+                        ImGui::SameLine(); ImGui::Dummy(ImVec2(50.0f, 0.0f)); ImGui::SameLine();
+
+                            ImGui::InputInt("  Flight Profile", &WaypointEntry.at(m_vectorPOS).PROFILE, NULL, NULL);
+                    }
 
                 //INPUT AND DISPLAY WPT LONG, including EAST/WEST:
-            ImGui::Text("LONG");
-            ImGui::SameLine();
+                    ImGui::Text("LONG");
+
+                ImGui::SameLine();
 
                 ImGui::PushItemWidth(scaledElementSize);/// width for combo button
 
@@ -170,8 +191,11 @@ public:
 
                 ImGui::PopItemWidth(); ImGui::SameLine();
 
-            ImGui::InputFloat("DEG    ##LON1", &WaypointEntry.at(m_vectorPOS).LON_d, NULL, NULL, "%.5f"); // NULL takes away the increment/decrement range creation buttons
-            WaypointEntry.at(m_vectorPOS).LON_d = std::clamp(WaypointEntry.at(m_vectorPOS).LON_d, 0.0f, 180.0f);    // Max of 180 degrees of Longitude
+                // INPUT LONGITUDE:
+                // NULL takes away the increment/decrement range creation buttons
+                // Clamp values, 180 Longitude degrees
+            ImGui::InputFloat("DEG    ##LON1", &WaypointEntry.at(m_vectorPOS).LON_d, NULL, NULL, "%.5f"); 
+            WaypointEntry.at(m_vectorPOS).LON_d = std::clamp(WaypointEntry.at(m_vectorPOS).LON_d, 0.0f, 180.0f);
 
             ImGui::SameLine();
             ImGui::InputFloat("MIN    ##LON1", &WaypointEntry.at(m_vectorPOS).LON_m, NULL, NULL, "%.5f");
@@ -189,7 +213,7 @@ public:
                 ImGui::SameLine(); ImGui::Dummy(ImVec2(50.0f, 0.0f)); ImGui::SameLine();
                 ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor::HSV(0.25f, 0.7f, 0.7f, 0.3f));
 
-                    float CorrectedFuelRate = (1/conversion) * fuelFlow;
+                    float CorrectedFuelRate = (1 / conversion) * fuelFlow;
 
                     WaypointEntry.at(m_vectorPOS).DISTANCE = conversion * haversine(m_vectorPOS /*index in vector*/,
                                                 (WaypointEntry.at(m_vectorPOS - 1).LAT_d + (WaypointEntry.at(m_vectorPOS - 1).LAT_m / 60) + (WaypointEntry.at(m_vectorPOS - 1).LAT_s / 3600)),    //Lat1

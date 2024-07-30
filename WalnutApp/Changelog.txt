@@ -30,3 +30,10 @@ July 27, 2024
 test-1 branch:
 July 28, 2024
 - convert fuel rate var to float to allow application of conversion factor which caused truncation as an int.
+
+
+test-1 branch:
+July 29, 2024
+- add new fuel flow functionality when setting units
+- make haversine function return NAUTICAL MILES to standardize the calculations
+- reduce unneeded code duplication that the Issue #001 bug fix solved

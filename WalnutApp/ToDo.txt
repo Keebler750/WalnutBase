@@ -1,7 +1,9 @@
 CURRENT SESSION:
+- test callback type scenario on input...can we connect our own event? YES... see next: (wrapper)
 
+- write a wrapper for the InputFloat( ) that clamps the value and calls haversine on changes
 
-
+- fix unit display on Leg Length
 
 
 PRIORITY:
