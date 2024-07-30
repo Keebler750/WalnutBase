@@ -19,14 +19,15 @@ enum setUnits
     KM = 1, NM = 2
 };
 
+static float conversion = 0.0f;
 
-const float convert_KM = 1.0000000f;
-const float convert_NM = 0.5399568f;
+const float convert_KM = 1.8520000f;
+const float convert_NM = 1.0000000f; //NM is our default, and we compare all other distance untis to this.0.5399568f;
 const float conver_MILES = 0.6213712f;
 
-
-
 constexpr float M_PI = 3.14159265358979323846f;
+
+static float fuelFlow = 15.0f;
 
 static int totalFuelUsed = 0;
 static float totalDistance = 0.0f;
@@ -48,13 +49,8 @@ static int WaypointCounter = 0;
     // STRUCT data type combining all of the waypoint floats.
 struct WPT
 {
-    float LAT_d; // Lat 1
-    float LAT_m;
-    float LAT_s;
-
-    float LON_d; // Long 1
-    float LON_m;
-    float LON_s;
+    float LAT_d, LAT_m, LAT_s; // Lat 1
+    float LON_d, LON_m, LON_s; // Long 1
 
     int PROFILE;
     float DISTANCE;
@@ -87,13 +83,8 @@ class WAYPOINT
 {
 public:
     // These variables will be stored in vector; all others are transient or recalculated.
-    float lat_d; // Latitude of each wptID waypoint, placed into vector
-    float lat_m;
-    float lat_s;
-
-    float lon_d; // Longitude of each wptID waypoint, placed into vector
-    float lon_m;
-    float lon_s;
+    float lat_d, lat_m, lat_s; // Latitude of each wptID waypoint, placed into vector
+    float lon_d, lon_m, lon_s; // Longitude of each wptID waypoint, placed into vector
 
     int profile;
     float distance;
@@ -190,7 +181,6 @@ public:
             ImGui::InputFloat("SEC    ##LON1", &WaypointEntry.at(m_vectorPOS).LON_s, NULL, NULL, "%.5f");
             WaypointEntry.at(m_vectorPOS).LON_s = std::clamp(WaypointEntry.at(m_vectorPOS).LON_s, 0.0f, 60.0f);
 
-
             // COLUMN TWO INPUT AND DISPLAY: Leg distance and fuel used
                 // Don't calc a distance if we only have one waypoint
                 // ---> Calculate the distance and store the data in the vector
@@ -199,42 +189,18 @@ public:
                 ImGui::SameLine(); ImGui::Dummy(ImVec2(50.0f, 0.0f)); ImGui::SameLine();
                 ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor::HSV(0.25f, 0.7f, 0.7f, 0.3f));
 
-                if (units == KM) // DISPLAY BASED ON UNIT PREFS:
-                {
-                    float fuelRateValue = 15.0f;
+                    float CorrectedFuelRate = (1/conversion) * fuelFlow;
 
-                    WaypointEntry.at(m_vectorPOS).DISTANCE = haversine(m_vectorPOS /*position*/, 
+                    WaypointEntry.at(m_vectorPOS).DISTANCE = conversion * haversine(m_vectorPOS /*index in vector*/,
                                                 (WaypointEntry.at(m_vectorPOS - 1).LAT_d + (WaypointEntry.at(m_vectorPOS - 1).LAT_m / 60) + (WaypointEntry.at(m_vectorPOS - 1).LAT_s / 3600)),    //Lat1
                                                 (WaypointEntry.at(m_vectorPOS - 1).LON_d + (WaypointEntry.at(m_vectorPOS - 1).LON_m / 60) + (WaypointEntry.at(m_vectorPOS - 1).LON_s / 3600)),    //Long1
                                                 (WaypointEntry.at(m_vectorPOS).LAT_d + (WaypointEntry.at(m_vectorPOS).LAT_m / 60) + (WaypointEntry.at(m_vectorPOS).LAT_s / 3600)),    //Lat2
                                                 (WaypointEntry.at(m_vectorPOS).LON_d + (WaypointEntry.at(m_vectorPOS).LON_m / 60) + (WaypointEntry.at(m_vectorPOS).LON_s / 3600)));   //Long2
 
-                    WaypointEntry.at(m_vectorPOS).FUEL = (int)((convert_NM) * (fuelRateValue * WaypointEntry.at(m_vectorPOS).DISTANCE));
-                    ImGui::InputFloat("  Leg (KM)        ", &WaypointEntry.at(m_vectorPOS).DISTANCE, NULL, NULL, "%.0f");
+                    WaypointEntry.at(m_vectorPOS).FUEL = (int)(CorrectedFuelRate * WaypointEntry.at(m_vectorPOS).DISTANCE);
+                    ImGui::InputFloat("##LegDist", &WaypointEntry.at(m_vectorPOS).DISTANCE, NULL, NULL, "%.0f"); ImGui::SameLine(); ImGui::Text("Leg Length (%d)", units);
                     ImGui::SameLine();
                     ImGui::InputInt("  Approx. Fuel Used (LBS)", &WaypointEntry.at(m_vectorPOS).FUEL, NULL, NULL);
-                }
-
-                else if (units == NM) // DISPLAY BASED ON UNIT PREFS:
-                {
-                    float fuelRateValue = 15.0f;
-
-                    WaypointEntry.at(m_vectorPOS).DISTANCE = convert_NM * (haversine(m_vectorPOS /*position*/, 
-                                                (WaypointEntry.at(m_vectorPOS - 1).LAT_d + (WaypointEntry.at(m_vectorPOS - 1).LAT_m / 60) + (WaypointEntry.at(m_vectorPOS - 1).LAT_s / 3600)),      //Lat1
-                                                (WaypointEntry.at(m_vectorPOS - 1).LON_d + (WaypointEntry.at(m_vectorPOS - 1).LON_m / 60) + (WaypointEntry.at(m_vectorPOS - 1).LON_s / 3600)),      //Long1
-                                                (WaypointEntry.at(m_vectorPOS).LAT_d + (WaypointEntry.at(m_vectorPOS).LAT_m / 60) + (WaypointEntry.at(m_vectorPOS).LAT_s / 3600)),      //Lat2
-                                                (WaypointEntry.at(m_vectorPOS).LON_d + (WaypointEntry.at(m_vectorPOS).LON_m / 60) + (WaypointEntry.at(m_vectorPOS).LON_s / 3600))));    //Long2
-
-                    WaypointEntry.at(m_vectorPOS).FUEL = (int)(fuelRateValue * WaypointEntry.at(m_vectorPOS).DISTANCE); // NOTE: Distance already converted once.
-                    ImGui::InputFloat("  Leg (NM)        ", &WaypointEntry.at(m_vectorPOS).DISTANCE, NULL, NULL, "%.0f");
-                    ImGui::SameLine();
-                    ImGui::InputInt("  Approx. Fuel Used (LBS)", &WaypointEntry.at(m_vectorPOS).FUEL, NULL, NULL);
-                }
-
-                else
-                {
-
-                }
 
                 ImGui::PopStyleColor();
             }
@@ -245,9 +211,7 @@ public:
             ImGui::Separator();
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
-
         ImGui::PopItemWidth();
-
     }
 
         // Get the sign for North/South latitude to make the formula work anywhere in the world.
@@ -291,13 +255,10 @@ public:
         
     }
 
-
-        // C++ code for the haversine formula
+        // C++ code for the haversine formula, which outputs in NAUTICAL MILES
         // Core math for distance calc from position data. Requires decimal degrees to four place precision.
     float haversine(float position, float lat1, float lon1, float lat2, float lon2 )
         {
-            //int position = 0; // TEST, crashes due to vector pos.
-
 
             //testMarker++; // place or turn this on to test loop count
 
@@ -317,7 +278,7 @@ public:
                 cos(lat1) * cos(lat2);
             float rad = 6371.0f;
             float c = 2.0f * asin(sqrt(a));
-            return rad * c; // Calculated distance between the two points.
+            return (0.5399568f) * rad * c; // Output is in NAUTICAL MILES (correction factor listed is from KM to NM).
         }
 
     void totalFuelCalc()
@@ -336,7 +297,6 @@ public:
     {
         fuelRemaining = (int)startFuel - totalFuelUsed;
     }
-
 };
 
 

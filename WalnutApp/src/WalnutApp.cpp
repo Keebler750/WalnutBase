@@ -66,6 +66,12 @@ public:
             ImGui::RadioButton("KM", &units, KM); ImGui::SameLine();
             ImGui::RadioButton("NM", &units, NM); //ImGui::SameLine();
 
+            if (units == NM)
+                conversion = convert_NM;
+
+            if (units == KM)
+                conversion = convert_KM;
+
 
         // Component that allows for format/spacing that is invisible
         //-----------------------------------------------------------
@@ -173,6 +179,9 @@ public:
                     ImGui::Text("(  %.0f %%)", fuelPercent); ImGui::SameLine();
                 }
             }
+
+            ImGui::Dummy(ImVec2(45.0f, 0.0f)); ImGui::SameLine();
+            ImGui::InputFloat("Fuel Flow, LBS/nm", &fuelFlow, NULL, NULL, "%.0f");
 
             // Component that allows for format/spacing that is invisible
             //------------------------------------------------------------
