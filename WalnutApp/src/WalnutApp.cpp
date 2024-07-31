@@ -1,13 +1,11 @@
 #include "Walnut/Application.h"
 #include "Walnut/EntryPoint.h"
-
-#include "../MathFunctions.h"
 #include "Walnut/Image.h"
-//#include <vector>
 
-/// <summary>
-/// ////////// Walnut/Application.cpp, line 480-ish contains window style setup that could use to be addressed better.
-/// </summary>
+
+/// <NOTE>
+/// Walnut/Application.cpp, line 480-ish contains window style setup that could use to be addressed better.
+/// </NOTE>
 
 
 class ExampleLayer : public Walnut::Layer
@@ -54,7 +52,7 @@ public:
         ImGui::PushItemWidth(scaledElementSize);
         {
             if (ImGui::Button("Reset:"))    // simple font reset
-                fontSize = 0.8f;
+                fontSize = 0.7f;
             ImGui::SameLine();
             ImGui::SliderFloat("Font Size", &fontSize, 0.6f, 1.2f, "%.2f");
             ImGui::SetWindowFontScale(fontSize);
@@ -72,14 +70,7 @@ public:
             if (units == KM)
                 conversion = convert_KM;
 
-
-        // Component that allows for format/spacing that is invisible
-        //-----------------------------------------------------------
-            {
-                ImGui::Dummy(ImVec2(0.0f, 35.0f));
-                ImGui::Separator();
-                ImGui::Dummy(ImVec2(0.0f, 10.0f));
-            }
+        ImGui::Dummy(ImVec2(0.0f, 35.0f)); ImGui::Separator(); ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
             //This is not used anywhere yet other than radio buttons.
             enum AircraftType { None, F18, F15, A10 };    
@@ -183,17 +174,18 @@ public:
             ImGui::Dummy(ImVec2(45.0f, 0.0f)); ImGui::SameLine();
             ImGui::InputFloat("Fuel Flow, LBS/nm", &fuelFlow, NULL, NULL, "%.0f");
 
-            // Component that allows for format/spacing that is invisible
-            //------------------------------------------------------------
-            {
-                ImGui::Dummy(ImVec2(0.0f, 35.0f));
-                ImGui::Separator(); // -----------------------------------------------------------
-                ImGui::Dummy(ImVec2(0.0f, 10.0f));
-            }
-            
+        ImGui::Dummy(ImVec2(0.0f, 20.0f)); ImGui::Separator(); ImGui::Dummy(ImVec2(0.0f, 10.0f));
+
             //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<--------- turn this on to check loop count
-            ImGui::Text("Test for Loop Function Increments: %d", testMarker); 
-            //testMarker++;
+        ImGui::Text("DEBUG TEST for Looping Function Increments:"); ImGui::SameLine(); ImGui::Text("  While - %d  ", WhileLoop_testMarker); ImGui::SameLine(); ImGui::Text("  HAV - %d  ", Haversine_testMarker);
+        ImGui::SameLine(); ImGui::Text("  Clamp1 - %d  ", ClampFloat1_testMarker); ImGui::SameLine(); ImGui::Text("  Clamp2 - %d  ", ClampFloat2_testMarker); ImGui::SameLine(); ImGui::Text("  Draw - %d  ", DrawEntry_testMarker);
+
+        WhileLoop_testMarker++;
+
+        ImGui::Dummy(ImVec2(0.0f, 10.0f)); ImGui::Separator(); ImGui::Dummy(ImVec2(0.0f, 20.0f));
+        // MIDDLE: DRAW WAYPOINT ELEMENTS
+            
+
 
             // Make the button inside the push tags an obvious color
         ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0.25f, 0.7f, 0.4f));
@@ -201,26 +193,16 @@ public:
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.25f, 1.0f, 1.0f));
 
 
-            // BUTTON CREATES NEW WAYPOINT ENTRY:
+            // EACH ' + ' BUTTON CLICK CREATES NEW WAYPOINT ENTRY and adds to DrawEntry loop:
             if (ImGui::Button(" + ") && (WaypointCounter < 100)) // button click size over-run guard!
             {
                 WaypointCounter++;  // Keep track of new waypoint items. Not the same as waypoint ID
                 b_IsNewWaypoint = true; // Only Emplace_back on button click for new waypoint
-            }
-            ImGui::SameLine(); ImGui::Text(" Add Waypoint (%d total, MAX = 100)", WaypointCounter);
+            }ImGui::SameLine();
+
+            ImGui::Text(" Add Waypoint (%d total, MAX = 100)", WaypointCounter);
 
         ImGui::PopStyleColor(3);
-
-        // Component that allows for format/spacing that is invisible
-        //-----------------------------------------------------------
-        {    ImGui::Dummy(ImVec2(0.0f, 10.0f));
-            ImGui::Separator();
-            ImGui::Dummy(ImVec2(0.0f, 10.0f));
-        }
-            
-            // Generates number of waypoint items to draw based on "+" CREATE clicks.
-            // NOTE: This doesn't really ID the waypoint although it is used that way for now.
-
 
             // This is used as the position index inside the vector of waypoint data.
             static int VectorPosition = 0;
@@ -228,8 +210,11 @@ public:
             for (VectorPosition = 0; VectorPosition < WaypointCounter; VectorPosition++)
             {
                 // Note - ITEM is instantiated in EntryPoint.h before the while-loop.
-                item.drawEntry(VectorPosition, units); // Modular draw call, only for the number of waypoints
+                item.drawEntry(VectorPosition, units); // Modular draw call, per the number of waypoints
             }
+
+        //ImGui::Dummy(ImVec2(0.0f, 10.0f)); ImGui::Separator(); ImGui::Dummy(ImVec2(0.0f, 10.0f));
+        // FOOTER: (TOTALS at bottom of main page)
 
             if (VectorPosition >= 2)
             {
@@ -239,7 +224,7 @@ public:
 
             ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor::HSV(0.25f, 0.7f, 0.7f, 0.3f));
 
-                ImGui::SameLine(); ImGui::Dummy(ImVec2(20.0f, 100.0f)); //ImGui::SameLine();
+                ImGui::SameLine(); ImGui::Dummy(ImVec2(20.0f, 70.0f)); //ImGui::SameLine();
                 ImGui::InputInt("Total Fuel Used (LBS)", &totalFuelUsed, NULL, NULL);  ImGui::SameLine(); ImGui::Dummy(ImVec2(20.0f, 0.0f)); ImGui::SameLine();
                 ImGui::InputFloat("Total Distance (UNITS)", &totalDistance, NULL, NULL, "%.0f"); ImGui::SameLine(); ImGui::Dummy(ImVec2(20.0f, 0.0f)); ImGui::SameLine();
                 ImGui::InputInt("Fuel Remaining (LBS)", &fuelRemaining, NULL, NULL);
@@ -301,7 +286,3 @@ Walnut::Application* Walnut::CreateApplication(int argc, char** argv)
 
     return app;
 }
-
-// Construct a function that sums over the individual components of the vector struct type:
-//float sum_a = std::accumulate(entities.begin(), entities.end(), 0.0f, 
-//[](float sum, const Entity& e) { return sum + e.a; }); 

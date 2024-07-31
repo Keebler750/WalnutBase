@@ -7,8 +7,11 @@
 extern Walnut::Application* Walnut::CreateApplication(int argc, char** argv);
 bool g_ApplicationRunning = true;
 
-// instantiation of class object to access non static class members (technically a singleton...)
+
+// ##### instantiation of class object to access non static class members, avoiding while-loop issues.
 WAYPOINT item;
+
+
 namespace Walnut {
 	
 

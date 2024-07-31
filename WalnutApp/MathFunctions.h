@@ -6,8 +6,12 @@
 #include <numeric>
 #include <algorithm>
 
-
-static int testMarker = 0;
+// VARS for DEBUG LOOP CHECKS:
+static int ClampFloat1_testMarker = 0;
+static int ClampFloat2_testMarker = 0;
+static int Haversine_testMarker = 0;
+static int DrawEntry_testMarker = 0;
+static int WhileLoop_testMarker = 0;
 
 enum setUnits
 {
@@ -31,7 +35,7 @@ static int  fuelRemaining = 0;
 
 static float startFuel = 0;
 
-static float fontSize = 0.8f;
+static float fontSize = 0.7f;
 static float defaultSize = 70;
 static float scaledElementSize = 70.0f;
 
@@ -107,7 +111,7 @@ public:
             b_IsNewWaypoint = false; // reset until value is made true again by button press to create waypoint
         }
 
-        //testMarker++; //used to test the loop incrementation. Output is on WalnutApp.cpp near the "+" button
+        DrawEntry_testMarker++; //used to test the loop incrementation. Output is on WalnutApp.cpp near the "+" button
 
         // SIZE TEST to make sure vector is not growing due to loop:
         // ImGui::Text("Entry size: %d", Entry.size());
@@ -143,7 +147,7 @@ public:
                     ClampInputFloat(/*m_vectorPOS, conversion,*/ "MIN    ##LAT1", &WaypointEntry.at(m_vectorPOS).LAT_m, NULL, NULL, "%.5f", 0.0f, 60.0f, NULL); ImGui::SameLine();
                     ClampInputFloat(/*m_vectorPOS, conversion,*/ "SEC    ##LAT1", &WaypointEntry.at(m_vectorPOS).LAT_s, NULL, NULL, "%.5f", 0.0f, 60.0f, NULL);
 
-                    // on the second waypoint, add column two input and display: Flight profile
+                    // COLUMN 2: on the second waypoint, add column two input and display: Flight profile
                     if (m_vectorPOS >= 1)
                     {
                             ImGui::SameLine(); ImGui::Dummy(ImVec2(50.0f, 0.0f)); ImGui::SameLine();
@@ -165,20 +169,19 @@ public:
                 ImGui::SameLine(); ImGui::PopItemWidth(); ImGui::SameLine();
                 
 
-                // INPUT LONGITUDE:
-                // NULL takes away the increment/decrement range creation buttons
-                // Clamp values, 180 Longitude degrees
+                    // INPUT LONGITUDE:
+                    // NULL takes away the increment/decrement range creation buttons
+                    // Clamp values, 180 Longitude degrees
                     ClampInputFloat(/*m_vectorPOS, conversion,*/ "DEG    ##LON1", &WaypointEntry.at(m_vectorPOS).LON_d, NULL, NULL, "%.5f", 0.0f, 180.0f, NULL); ImGui::SameLine();
                     ClampInputFloat(/*m_vectorPOS, conversion,*/ "MIN    ##LON1", &WaypointEntry.at(m_vectorPOS).LON_m, NULL, NULL, "%.5f", 0.0f, 60.0f, NULL); ImGui::SameLine();
                     ClampInputFloat(/*m_vectorPOS, conversion,*/ "SEC    ##LON1", &WaypointEntry.at(m_vectorPOS).LON_s, NULL, NULL, "%.5f", 0.0f, 60.0f, NULL);
 
-                    
 
-            // COLUMN TWO INPUT AND DISPLAY: Leg distance and fuel used
-                // Don't calc a distance if we only have one waypoint
-                // ---> Calculate the distance and store the data in the vector
-            if (m_vectorPOS >= 1)
-            {
+                    // COLUMN 2: INPUT AND DISPLAY: Leg distance and fuel used
+                    // Don't calc a distance if we only have one waypoint
+                    // ---> Calculate the distance and store the data in the vector
+                    if (m_vectorPOS >= 1)
+                    {
                 ImGui::SameLine(); ImGui::Dummy(ImVec2(50.0f, 0.0f)); ImGui::SameLine();
                 ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor::HSV(0.25f, 0.7f, 0.7f, 0.3f));
 
@@ -196,12 +199,12 @@ public:
                     ImGui::InputInt("  Approx. Fuel Used (LBS)", &WaypointEntry.at(m_vectorPOS).FUEL, NULL, NULL);
 
                 ImGui::PopStyleColor();
-            }
+                    }
+
             ImGui::PopID();
 
-                // Component that allows for format/spacing that is invisible
-            ImGui::Dummy(ImVec2(0.0f, 10.0f)); ImGui::Separator(); ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
+            ImGui::Dummy(ImVec2(0.0f, 10.0f)); ImGui::Separator(); ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
 
         ImGui::PopItemWidth();
@@ -228,12 +231,12 @@ public:
     // value_min and value_max added in wrapper.
     void ClampInputFloat(/*int position, float conversion,*/ const char* label, float* v, float step, float step_fast, const char* format, float value_min, float value_max, ImGuiInputTextFlags flags)
     {
-        
+        ClampFloat1_testMarker++;
 
         if (ImGui::InputFloat(label, v, step, step_fast, format, flags))
         {
             *v = std::clamp(*v, value_min, value_max);
-            testMarker++;
+            ClampFloat2_testMarker++;
 
             //if (position >= 1)
             //{
@@ -299,7 +302,7 @@ public:
             //}
         
         
-        //testMarker++; // place or turn this on to test loop count
+        Haversine_testMarker++; // place or turn this on to test loop count
 
             // distance between latitudes and longitudes
             float deltaLAT = ((lat2 * (signNorthSouth(WaypointEntry.at(position).NS))) - (lat1 * (signNorthSouth(WaypointEntry.at(position - 1).NS)))) *

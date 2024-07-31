@@ -4,7 +4,9 @@ CURRENT SESSION:
 - WIP - write a wrapper for the InputFloat( ) that calls haversine only on changes
 ^^ THIS IS BEING BITCHY ^^
 
-- fix unit display on Leg Length
+- fix unit display on Leg Length - will need a char or string var to draw there.
+
+- Can a change of units trigger a run through the loop to reset any calcs requiring it?
 
 
 PRIORITY:
