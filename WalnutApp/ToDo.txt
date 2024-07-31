@@ -1,7 +1,8 @@
 CURRENT SESSION:
 - test callback type scenario on input...can we connect our own event? YES... see next: (wrapper)
 
-- write a wrapper for the InputFloat( ) that clamps the value and calls haversine on changes
+- WIP - write a wrapper for the InputFloat( ) that calls haversine only on changes
+^^ THIS IS BEING BITCHY ^^
 
 - fix unit display on Leg Length
 
@@ -88,4 +89,7 @@ Now fuel use stays same for same distance, converted or not.
 
 - DONE - we pass 'a' into drawEntry in MathFunctions.h in a pretty lazy fashion. Name the vars better!!! 
 	[Decided to use vector position naming so that I can hash-label the waypoint IDs later to move and edit the matrix]
+
+- DONE - write a wrapper for the InputFloat( ) that clamps the value and calls haversine on changes
+
 
