@@ -54,3 +54,4 @@ July 31, 2024
 - created a dedicated trigger function to calculate (or recalculate) values
 - haversine only runs on changed values
 - added a bug fix for NS/EW not triggering the re-calc
+- add the unitString text as a label for the distance output.
