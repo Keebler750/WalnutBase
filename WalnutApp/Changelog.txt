@@ -53,3 +53,4 @@ July 31, 2024
 - moved decimal degree calc into haversine
 - created a dedicated trigger function to calculate (or recalculate) values
 - haversine only runs on changed values
+- added a bug fix for NS/EW not triggering the re-calc

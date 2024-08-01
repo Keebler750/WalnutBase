@@ -131,6 +131,7 @@ public:
                     if (ImGui::Combo("##1", &WaypointEntry.at(m_vectorPOS).NS, "North\0South\0", 2))
                     {
                         WaypointEntry.at(m_vectorPOS).NS = WaypointEntry.at(m_vectorPOS).NS;
+                        b_valueChanged = true;
                     }
 
                 ImGui::SameLine();
@@ -162,6 +163,7 @@ public:
                     if (ImGui::Combo("##2", &WaypointEntry.at(m_vectorPOS).EW, "East\0West\0", 2))
                     {
                         WaypointEntry.at(m_vectorPOS).EW = WaypointEntry.at(m_vectorPOS).EW;
+                        b_valueChanged = true;
                     }
 
                 ImGui::SameLine(); ImGui::PopItemWidth(); ImGui::SameLine();

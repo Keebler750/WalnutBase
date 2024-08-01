@@ -1,15 +1,12 @@
 CURRENT SESSION:
-- test callback type scenario on input...can we connect our own event? YES... see next: (wrapper)
-
-- WIP - write a wrapper for the InputFloat( ) that calls haversine only on changes
-^^ THIS IS BEING BITCHY ^^
 
 - fix unit display on Leg Length - will need a char or string var to draw there.
 
-- Can a change of units trigger a run through the loop to reset any calcs requiring it?
 
 
 PRIORITY:
+
+- BUG - NS/EW does not update with b_valueChanged
 
 - BUG - HAVERSINE or other calcs constantly recalc in the loop, wasting computing time.
 
@@ -81,7 +78,9 @@ WISH LIST:
 
 CLEARED:
 
-- DONE - ISSUE 001 - Bug squashed, fuel use was changing when distance unit prefs changed. 
+- DONE - BUG FIX NS/EW bug by adding b_valueChanged trigger
+
+- DONE - ISSUE 001 - BUG FIX, fuel use was changing when distance unit prefs changed. 
 Now fuel use stays same for same distance, converted or not.
 
 - DONE - Stop vector emplace_back race condition in which action occurred EACH while-loop. Vector kept growing!
@@ -94,4 +93,4 @@ Now fuel use stays same for same distance, converted or not.
 
 - DONE - write a wrapper for the InputFloat( ) that clamps the value and calls haversine on changes
 
-
+- DONE - trigger that calls haversine etc only on changes
