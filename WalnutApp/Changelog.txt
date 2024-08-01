@@ -49,3 +49,7 @@ test-2 branch: (ADDED) -> will merge with test-1
 July 31, 2024
 - Add DEBUG loop checks in multiple locations to follow function calls
 - More cleanup, as usual.
+- added b_valueChanged flag to re-trigger calcs if a value changes
+- moved decimal degree calc into haversine
+- created a dedicated trigger function to calculate (or recalculate) values
+- haversine only runs on changed values

@@ -3,9 +3,10 @@
 #include "Walnut/Image.h"
 
 
-/// <NOTE>
-/// Walnut/Application.cpp, line 480-ish contains window style setup that could use to be addressed better.
-/// </NOTE>
+/// <NOTES>
+/// Walnut/Application.cpp, line 480-ish contains window style setup
+/// WAYPOINT class instantiated way over in Entry.h to avoid constant hits from the while-loop
+/// </NOTES>
 
 
 class ExampleLayer : public Walnut::Layer
@@ -50,7 +51,7 @@ public:
             ImGui::Text("Set Options:");
             
         ImGui::PushItemWidth(scaledElementSize);
-        {
+        
             if (ImGui::Button("Reset:"))    // simple font reset
                 fontSize = 0.7f;
             ImGui::SameLine();
@@ -61,14 +62,12 @@ public:
 
             // UNITS are set here:
             ImGui::Text("Units: "); ImGui::SameLine();
-            ImGui::RadioButton("KM", &units, KM); ImGui::SameLine();
-            ImGui::RadioButton("NM", &units, NM); //ImGui::SameLine();
-
-            if (units == NM)
-                conversion = convert_NM;
-
-            if (units == KM)
-                conversion = convert_KM;
+            if(ImGui::RadioButton("KM", &units, KM))
+                b_valueChanged = true; ImGui::SameLine();
+            if(ImGui::RadioButton("NM", &units, NM))
+                b_valueChanged =true;
+            ImGui::SameLine(); ImGui::Dummy(ImVec2(20.0f, 0.0f)); ImGui::SameLine();
+            ImGui::Checkbox("Show Debug", &b_debug);
 
         ImGui::Dummy(ImVec2(0.0f, 35.0f)); ImGui::Separator(); ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
@@ -172,20 +171,21 @@ public:
             }
 
             ImGui::Dummy(ImVec2(45.0f, 0.0f)); ImGui::SameLine();
-            ImGui::InputFloat("Fuel Flow, LBS/nm", &fuelFlow, NULL, NULL, "%.0f");
+            if (ImGui::InputFloat("Fuel Flow, LBS/nm", &fuelFlow, NULL, NULL, "%.0f"))
+                b_valueChanged = true;
 
-        ImGui::Dummy(ImVec2(0.0f, 20.0f)); ImGui::Separator(); ImGui::Dummy(ImVec2(0.0f, 10.0f));
+            if (b_debug)
+            {
+                ImGui::Dummy(ImVec2(0.0f, 20.0f)); ImGui::Separator(); ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
-            //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<--------- turn this on to check loop count
-        ImGui::Text("DEBUG TEST for Looping Function Increments:"); ImGui::SameLine(); ImGui::Text("  While - %d  ", WhileLoop_testMarker); ImGui::SameLine(); ImGui::Text("  HAV - %d  ", Haversine_testMarker);
-        ImGui::SameLine(); ImGui::Text("  Clamp1 - %d  ", ClampFloat1_testMarker); ImGui::SameLine(); ImGui::Text("  Clamp2 - %d  ", ClampFloat2_testMarker); ImGui::SameLine(); ImGui::Text("  Draw - %d  ", DrawEntry_testMarker);
-
-        WhileLoop_testMarker++;
+                ImGui::Text("DEBUG TEST for Looping Function Increments:"); ImGui::SameLine(); ImGui::Text("  While - %d  ", WhileLoop_testMarker); ImGui::SameLine(); ImGui::Text("  HAV - %d  ", Haversine_testMarker);
+                ImGui::SameLine(); ImGui::Text("  Clamp1 - %d  ", ClampFloat1_testMarker); ImGui::SameLine(); ImGui::Text("  Clamp2 - %d  ", ClampFloat2_testMarker); ImGui::SameLine(); ImGui::Text("  Draw - %d  ", DrawEntry_testMarker);
+            }
+            
+            WhileLoop_testMarker++;
 
         ImGui::Dummy(ImVec2(0.0f, 10.0f)); ImGui::Separator(); ImGui::Dummy(ImVec2(0.0f, 20.0f));
         // MIDDLE: DRAW WAYPOINT ELEMENTS
-            
-
 
             // Make the button inside the push tags an obvious color
         ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0.25f, 0.7f, 0.4f));
@@ -213,7 +213,6 @@ public:
                 item.drawEntry(VectorPosition, units); // Modular draw call, per the number of waypoints
             }
 
-        //ImGui::Dummy(ImVec2(0.0f, 10.0f)); ImGui::Separator(); ImGui::Dummy(ImVec2(0.0f, 10.0f));
         // FOOTER: (TOTALS at bottom of main page)
 
             if (VectorPosition >= 2)
@@ -224,7 +223,7 @@ public:
 
             ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor::HSV(0.25f, 0.7f, 0.7f, 0.3f));
 
-                ImGui::SameLine(); ImGui::Dummy(ImVec2(20.0f, 70.0f)); //ImGui::SameLine();
+                ImGui::SameLine(); ImGui::Dummy(ImVec2(20.0f, 30.0f)); //ImGui::SameLine();
                 ImGui::InputInt("Total Fuel Used (LBS)", &totalFuelUsed, NULL, NULL);  ImGui::SameLine(); ImGui::Dummy(ImVec2(20.0f, 0.0f)); ImGui::SameLine();
                 ImGui::InputFloat("Total Distance (UNITS)", &totalDistance, NULL, NULL, "%.0f"); ImGui::SameLine(); ImGui::Dummy(ImVec2(20.0f, 0.0f)); ImGui::SameLine();
                 ImGui::InputInt("Fuel Remaining (LBS)", &fuelRemaining, NULL, NULL);
@@ -232,7 +231,7 @@ public:
             ImGui::PopStyleColor();
             }
 
-        }ImGui::PopItemWidth();
+        ImGui::PopItemWidth();
 
         ImGui::End();
     }
