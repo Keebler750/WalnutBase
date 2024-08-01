@@ -30,3 +30,28 @@ July 27, 2024
 test-1 branch:
 July 28, 2024
 - convert fuel rate var to float to allow application of conversion factor which caused truncation as an int.
+
+
+test-1 branch:
+July 29, 2024
+- add new fuel flow functionality when setting units
+- make haversine function return NAUTICAL MILES to standardize the calculations
+- reduce unneeded code duplication that the Issue #001 bug fix solved
+
+
+test-2 branch: (ADDED) -> will merge with test-1
+July 30, 2024
+- write ClampInputFloat wrapper for ImGui::InputFloat since the latter didn't have clamp functionality.
+- further reduced code complexity as calls improved
+
+
+test-2 branch: (ADDED) -> will merge with test-1
+July 31, 2024
+- Add DEBUG loop checks in multiple locations to follow function calls
+- More cleanup, as usual.
+- added b_valueChanged flag to re-trigger calcs if a value changes
+- moved decimal degree calc into haversine
+- created a dedicated trigger function to calculate (or recalculate) values
+- haversine only runs on changed values
+- added a bug fix for NS/EW not triggering the re-calc
+- add the unitString text as a label for the distance output.

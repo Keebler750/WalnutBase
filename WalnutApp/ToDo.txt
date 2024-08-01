@@ -1,10 +1,12 @@
 CURRENT SESSION:
 
-
+- fix unit display on Leg Length - will need a char or string var to draw there.
 
 
 
 PRIORITY:
+
+- BUG - NS/EW does not update with b_valueChanged
 
 - BUG - HAVERSINE or other calcs constantly recalc in the loop, wasting computing time.
 
@@ -76,7 +78,9 @@ WISH LIST:
 
 CLEARED:
 
-- DONE - ISSUE 001 - Bug squashed, fuel use was changing when distance unit prefs changed. 
+- DONE - BUG FIX NS/EW bug by adding b_valueChanged trigger
+
+- DONE - ISSUE 001 - BUG FIX, fuel use was changing when distance unit prefs changed. 
 Now fuel use stays same for same distance, converted or not.
 
 - DONE - Stop vector emplace_back race condition in which action occurred EACH while-loop. Vector kept growing!
@@ -87,3 +91,6 @@ Now fuel use stays same for same distance, converted or not.
 - DONE - we pass 'a' into drawEntry in MathFunctions.h in a pretty lazy fashion. Name the vars better!!! 
 	[Decided to use vector position naming so that I can hash-label the waypoint IDs later to move and edit the matrix]
 
+- DONE - write a wrapper for the InputFloat( ) that clamps the value and calls haversine on changes
+
+- DONE - trigger that calls haversine etc only on changes
