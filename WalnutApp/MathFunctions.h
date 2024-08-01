@@ -175,6 +175,7 @@ public:
                     ClampInputFloat("MIN    ##LON1", &WaypointEntry.at(m_vectorPOS).LON_m, NULL, NULL, "%.5f", 0.0f, 60.0f, NULL); ImGui::SameLine();
                     ClampInputFloat("SEC    ##LON1", &WaypointEntry.at(m_vectorPOS).LON_s, NULL, NULL, "%.5f", 0.0f, 60.0f, NULL);
 
+                    char* unitString = "test";
 
                     // COLUMN 2: INPUT AND DISPLAY: Leg distance and fuel used
                     // Don't calc (OR SHOW!) a distance if we only have one waypoint
@@ -190,10 +191,16 @@ public:
                                 runDistanceCalc(m_vectorPOS);
                             }
 
+                            // Set the text label:
+                            if (units == NM)
+                                unitString = "NM";
+                            if (units == KM)
+                                unitString = "KM";
+
                             WaypointEntry.at(m_vectorPOS).FUEL = (int)(CorrectedFuelRate * WaypointEntry.at(m_vectorPOS).DISTANCE);
-                            ImGui::InputFloat("##LegDist", &WaypointEntry.at(m_vectorPOS).DISTANCE, NULL, NULL, "%.0f"); ImGui::SameLine(); ImGui::Text("Leg Length (%d)", units);
-                            ImGui::SameLine();
-                            ImGui::InputInt("  Approx. Fuel Used (LBS)", &WaypointEntry.at(m_vectorPOS).FUEL, NULL, NULL);
+                            ImGui::InputFloat("##LegDist", &WaypointEntry.at(m_vectorPOS).DISTANCE, NULL, NULL, "%.0f"); ImGui::SameLine(); ImGui::Text("Leg Length (%s)", unitString); // <<<<<<<<
+                            ImGui::SameLine(); ImGui::Dummy(ImVec2(30.0f, 0.0f)); ImGui::SameLine();
+                            ImGui::InputInt("Approx. Fuel Used (LBS)", &WaypointEntry.at(m_vectorPOS).FUEL, NULL, NULL);
 
                         ImGui::PopStyleColor();
                     }
