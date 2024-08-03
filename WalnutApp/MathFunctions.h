@@ -6,6 +6,9 @@
 #include <numeric>
 #include <algorithm>
 
+#include <chrono>
+#include <thread>
+
 // VARS for DEBUG LOOP CHECKS:
 static int ClampFloat1_testMarker = 0;
 static int ClampFloat2_testMarker = 0;
@@ -41,6 +44,8 @@ static float scaledElementSize = 70.0f;
 
 static int units = 2;   // Sets Units default ENUM to nautical miles
 static bool b_debug = false;
+static int delay = 40;
+static bool b_allowIdling = true;
 
 // switch used to control emplace_back of new waypoint in // MathFunctions.h //
 static bool b_IsNewWaypoint = false;
@@ -207,7 +212,7 @@ public:
 
             ImGui::PopID();
 
-            ImGui::Dummy(ImVec2(0.0f, 10.0f)); ImGui::Separator(); ImGui::Dummy(ImVec2(0.0f, 10.0f));
+            ImGui::Dummy(ImVec2(0.0f, 10.0f)); ImGui::Separator(); ImGui::Dummy(ImVec2(0.0f, 0.0f));
 
         ImGui::PopItemWidth();
     }

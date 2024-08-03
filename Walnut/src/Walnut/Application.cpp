@@ -468,10 +468,12 @@ namespace Walnut {
 			style.WindowRounding = 0.0f;
 			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 		}
-		
-		style.WindowPadding = ImVec2(40.0f, 20.0f);
-		style.Colors[ImGuiCol_WindowBg] = ImVec4(0.12f, 0.14f, 0.16f, 0.6f);
 
+		// Added by user:
+		style.WindowPadding = ImVec2(40.0f, 20.0f);
+		style.Colors[ImGuiCol_WindowBg] = ImVec4(0.12f, 0.14f, 0.16f, 1.0f);
+		style.Colors[ImGuiCol_PopupBg] = ImVec4(0.10f, 0.12f, 0.16f, 1.0f);
+		style.PopupRounding = 6.0f;
 		
 
 		// Setup Platform/Renderer backends

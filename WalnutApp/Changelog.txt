@@ -55,3 +55,10 @@ July 31, 2024
 - haversine only runs on changed values
 - added a bug fix for NS/EW not triggering the re-calc
 - add the unitString text as a label for the distance output.
+-- MERGED into test-1 --
+
+feature-1
+Aug 2, 2024
+- added a rudimentary cycle reduction by adding a 'sleep_for' - THIS NEEDS WORK
+- added a "Allow Idling" checkbox set to default true.
+- some minor page formatting updates

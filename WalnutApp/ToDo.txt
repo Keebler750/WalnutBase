@@ -1,18 +1,13 @@
 CURRENT SESSION:
 
-- fix unit display on Leg Length - will need a char or string var to draw there.
 
 
 
 PRIORITY:
 
-- BUG - NS/EW does not update with b_valueChanged
-
-- BUG - HAVERSINE or other calcs constantly recalc in the loop, wasting computing time.
-
 - Take all calculations out of the render loop.
 
-- Reduce the number of unnecessary cycles through the loop if nothing is changing
+- WIP - cycle reduction - Reduce the number of unnecessary cycles through the loop if nothing is changing
 
 
 TO DO:
@@ -20,8 +15,6 @@ TO DO:
 - Variables are scattered EVERYWHERE.....come up with a plan.
 
 - WalnutApp.cpp needs a serious re-write.....stuff is everywhere
-
-- WIP (FUNCTIONAL) - Validate (Clamp) waypoint input to limit latitude to +-90 and longitude to +- 180 degrees
 
 - WIP - Menu structure.
 
@@ -34,7 +27,7 @@ TO DO:
 
 - How to deal with limit cases for 'antipodes?'
 
-- Can ImGui be updated to the latest version without breaking Walnut?
+- Can ImGui be updated to the latest version without breaking Walnut? (NOTE: not without a serious hassle. Tried to add the ImGui remote repo and it didn't end well.)
 
 - Add 'Insert' and 'Delete' waypoint options
 
@@ -91,6 +84,9 @@ Now fuel use stays same for same distance, converted or not.
 - DONE - we pass 'a' into drawEntry in MathFunctions.h in a pretty lazy fashion. Name the vars better!!! 
 	[Decided to use vector position naming so that I can hash-label the waypoint IDs later to move and edit the matrix]
 
-- DONE - write a wrapper for the InputFloat( ) that clamps the value and calls haversine on changes
+- DONE - write a wrapper for the InputFloat( ) that clamps the value and calls haversine on changes, (Clamp) waypoint input to limit latitude to +-90 and longitude to +- 180 degrees
 
 - DONE - trigger that calls haversine etc only on changes
+
+- DONE - add char* for unit descriptions. fix unit display on Leg Length - will need a char or string var to draw there.
+

@@ -36,40 +36,51 @@ public:
 
         // Create a window inside main window called "Application Window" and append into it.
         // un-comment the windowFlags when the "lockWindow = true" above.
+
+        //ImGui::PushStyleColor(ImGuiCol_MenuBarBg, ImVec4(0.12f, 0.14f, 0.16f, 0.6f) );
         ImGui::Begin("##MainAppWindowFuelCalc", NULL 
                     ,ImGuiWindowFlags_AlwaysHorizontalScrollbar |
                     ImGuiWindowFlags_AlwaysVerticalScrollbar |
                     //ImGuiWindowFlags_NoTitleBar |
                     //ImGuiWindowFlags_NoDocking |
+                    ImGuiWindowFlags_MenuBar |
                     ImGuiWindowFlags_NoDecoration |
                     ImGuiWindowFlags_NoResize |
                     ImGuiWindowFlags_NoMove
-                    );
+                    ); //ImGui::PopStyleColor();
 
-            ImGui::Text("Dear_ImGui Version Info: (%s) (%d)", IMGUI_VERSION, IMGUI_VERSION_NUM);
-            ImGui::Dummy(ImVec2(0.0f, 10.0f));
-            ImGui::Text("Set Options:");
+        ImGui::Dummy(ImVec2(0.0f, 20.0f));
+        //    ImGui::Text("Using Dear_ImGui Version: (%s) (%d)", IMGUI_VERSION, IMGUI_VERSION_NUM);
+        //ImGui::Dummy(ImVec2(0.0f, 20.0f));
+        //    ImGui::Text("Set Options:");
             
         ImGui::PushItemWidth(scaledElementSize);
         
-            if (ImGui::Button("Reset:"))    // simple font reset
-                fontSize = 0.7f;
-            ImGui::SameLine();
-            ImGui::SliderFloat("Font Size", &fontSize, 0.6f, 1.2f, "%.2f");
+            //if (ImGui::Button("Reset:"))    // simple font reset
+            //    fontSize = 0.7f;
+            //ImGui::SameLine();
+            //ImGui::SliderFloat("Font Size", &fontSize, 0.6f, 1.2f, "%.2f");
             ImGui::SetWindowFontScale(fontSize);
-            ImGui::SameLine(); ImGui::Dummy(ImVec2(20.0f, 0.0f)); ImGui::SameLine();
+            //ImGui::SameLine(); ImGui::Dummy(ImVec2(20.0f, 0.0f)); ImGui::SameLine();
 
 
             // UNITS are set here:
-            ImGui::Text("Units: "); ImGui::SameLine();
-            if(ImGui::RadioButton("KM", &units, KM))
-                b_valueChanged = true; ImGui::SameLine();
-            if(ImGui::RadioButton("NM", &units, NM))
-                b_valueChanged =true;
-            ImGui::SameLine(); ImGui::Dummy(ImVec2(20.0f, 0.0f)); ImGui::SameLine();
-            ImGui::Checkbox("Show Debug", &b_debug);
+            //ImGui::Text("Units: "); ImGui::SameLine();
+            //if(ImGui::RadioButton("KM", &units, KM))
+            //    b_valueChanged = true; ImGui::SameLine();
+            //if(ImGui::RadioButton("NM", &units, NM))
+            //    b_valueChanged =true;
+            //ImGui::SameLine(); ImGui::Dummy(ImVec2(20.0f, 0.0f)); ImGui::SameLine();
+            //ImGui::Checkbox("Show Debug", &b_debug);
+            //ImGui::SameLine(); ImGui::Dummy(ImVec2(20.0f, 0.0f)); ImGui::SameLine();
+            //ImGui::Checkbox("Allow Idling", &b_allowIdling);
 
-        ImGui::Dummy(ImVec2(0.0f, 35.0f)); ImGui::Separator(); ImGui::Dummy(ImVec2(0.0f, 10.0f));
+            if(b_allowIdling)
+            {
+                std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+            }
+
+        ImGui::Dummy(ImVec2(0.0f, 10.0f)); ImGui::Separator(); ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
             //This is not used anywhere yet other than radio buttons.
             enum AircraftType { None, F18, F15, A10 };    
@@ -176,7 +187,7 @@ public:
 
             if (b_debug)
             {
-                ImGui::Dummy(ImVec2(0.0f, 20.0f)); ImGui::Separator(); ImGui::Dummy(ImVec2(0.0f, 10.0f));
+                ImGui::Dummy(ImVec2(0.0f, 10.0f)); ImGui::Separator(); ImGui::Dummy(ImVec2(0.0f, 0.0f));
 
                 ImGui::Text("DEBUG TEST for Looping Function Increments:"); ImGui::SameLine(); ImGui::Text("  While - %d  ", WhileLoop_testMarker); ImGui::SameLine(); ImGui::Text("  HAV - %d  ", Haversine_testMarker);
                 ImGui::SameLine(); ImGui::Text("  Clamp1 - %d  ", ClampFloat1_testMarker); ImGui::SameLine(); ImGui::Text("  Clamp2 - %d  ", ClampFloat2_testMarker); ImGui::SameLine(); ImGui::Text("  Draw - %d  ", DrawEntry_testMarker);
@@ -184,7 +195,7 @@ public:
             
             WhileLoop_testMarker++;
 
-        ImGui::Dummy(ImVec2(0.0f, 10.0f)); ImGui::Separator(); ImGui::Dummy(ImVec2(0.0f, 20.0f));
+        ImGui::Dummy(ImVec2(0.0f, 10.0f)); ImGui::Separator(); ImGui::Dummy(ImVec2(0.0f, 10.0f));
         // MIDDLE: DRAW WAYPOINT ELEMENTS
 
             // Make the button inside the push tags an obvious color
@@ -201,6 +212,8 @@ public:
             }ImGui::SameLine();
 
             ImGui::Text(" Add Waypoint (%d total, MAX = 100)", WaypointCounter);
+
+            ImGui::Dummy(ImVec2(0.0f,10.0f));
 
         ImGui::PopStyleColor(3);
 
@@ -260,25 +273,62 @@ Walnut::Application* Walnut::CreateApplication(int argc, char** argv)
                     app->Close();
                 }
                 ImGui::EndMenu();
-            }
+            } ImGui::Dummy(ImVec2(10.0f, 0.0f));
 
             if (ImGui::BeginMenu("Settings"))
             {
-                if (ImGui::MenuItem("Units"))
+                (ImGui::MenuItem("Show Debug", "", &b_debug));
+                (ImGui::MenuItem("Allow Idling", "", &b_allowIdling));
+
+                if (ImGui::BeginMenu("Set Units"))
                 {
 
+                    ImGui::Text("Distance");
+                    if ((ImGui::RadioButton("KM", &units, KM)))
+                        b_valueChanged = true;
+                    if ((ImGui::RadioButton("NM", &units, NM)))
+                        b_valueChanged = true;;
+
+                    ImGui::EndMenu();
                 }
+
+                if (ImGui::BeginMenu("Font Size"))
+                {
+                    ImGui::PushItemWidth(scaledElementSize);
+
+                    if (ImGui::Button("Reset:"))    // simple font reset
+                        fontSize = 0.7f;
+                    ImGui::SameLine();
+                    ImGui::SliderFloat("Font Size", &fontSize, 0.6f, 1.2f, "%.2f");
+                    ImGui::PopItemWidth();
+
+                    ImGui::EndMenu();
+                }
+
                 ImGui::EndMenu();
-            }
+            } ImGui::Dummy(ImVec2(10.0f, 0.0f));
 
             if (ImGui::BeginMenu("Help"))
             {
-                if (ImGui::MenuItem("About..."))
+                if (ImGui::BeginMenu("About "))
                 {
+                    ImGui::Text("Built using Dear ImGui framework");
+                    ImGui::Text("Using 'Walnut' from Studio Cherno.");
+                    ImGui::Text("https://github.com/StudioCherno/Walnut");
 
+                    ImGui::EndMenu();
+                }
+                if (ImGui::BeginMenu("Versions "))
+                {
+                    ImGui::Text("ImGui Version (%s) (%d) and ", IMGUI_VERSION, IMGUI_VERSION_NUM);
+                    ImGui::Text("DCS Fuel Planner Version 1.00, Aug. 2024");
+                    ImGui::Text("Author: Keebler750");
+                    ImGui::Text("https://github.com/Keebler750/WalnutBase");
+
+                    ImGui::EndMenu();
                 }
                 ImGui::EndMenu();
-            }
+            } ImGui::Dummy(ImVec2(10.0f, 0.0f));
 
             ImGui::EndMainMenuBar();
         });
