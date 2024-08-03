@@ -34,10 +34,11 @@ public:
             ImGui::SetNextWindowSize(viewport->WorkSize);   //avoid drawing over main menubar.
         }
 
+
+
         // Create a window inside main window called "Application Window" and append into it.
         // un-comment the windowFlags when the "lockWindow = true" above.
 
-        //ImGui::PushStyleColor(ImGuiCol_MenuBarBg, ImVec4(0.12f, 0.14f, 0.16f, 0.6f) );
         ImGui::Begin("##MainAppWindowFuelCalc", NULL 
                     ,ImGuiWindowFlags_AlwaysHorizontalScrollbar |
                     ImGuiWindowFlags_AlwaysVerticalScrollbar |
@@ -47,33 +48,13 @@ public:
                     ImGuiWindowFlags_NoDecoration |
                     ImGuiWindowFlags_NoResize |
                     ImGuiWindowFlags_NoMove
-                    ); //ImGui::PopStyleColor();
+                    );
 
-        ImGui::Dummy(ImVec2(0.0f, 20.0f));
-        //    ImGui::Text("Using Dear_ImGui Version: (%s) (%d)", IMGUI_VERSION, IMGUI_VERSION_NUM);
-        //ImGui::Dummy(ImVec2(0.0f, 20.0f));
-        //    ImGui::Text("Set Options:");
+        ImGui::Dummy(ImVec2(0.0f, 20.0f));  // height to top of page
             
         ImGui::PushItemWidth(scaledElementSize);
-        
-            //if (ImGui::Button("Reset:"))    // simple font reset
-            //    fontSize = 0.7f;
-            //ImGui::SameLine();
-            //ImGui::SliderFloat("Font Size", &fontSize, 0.6f, 1.2f, "%.2f");
-            ImGui::SetWindowFontScale(fontSize);
-            //ImGui::SameLine(); ImGui::Dummy(ImVec2(20.0f, 0.0f)); ImGui::SameLine();
 
-
-            // UNITS are set here:
-            //ImGui::Text("Units: "); ImGui::SameLine();
-            //if(ImGui::RadioButton("KM", &units, KM))
-            //    b_valueChanged = true; ImGui::SameLine();
-            //if(ImGui::RadioButton("NM", &units, NM))
-            //    b_valueChanged =true;
-            //ImGui::SameLine(); ImGui::Dummy(ImVec2(20.0f, 0.0f)); ImGui::SameLine();
-            //ImGui::Checkbox("Show Debug", &b_debug);
-            //ImGui::SameLine(); ImGui::Dummy(ImVec2(20.0f, 0.0f)); ImGui::SameLine();
-            //ImGui::Checkbox("Allow Idling", &b_allowIdling);
+        ImGui::SetWindowFontScale(fontSize);
 
             if(b_allowIdling)
             {
@@ -335,3 +316,14 @@ Walnut::Application* Walnut::CreateApplication(int argc, char** argv)
 
     return app;
 }
+
+// Mouse checks from demo code:
+
+/*ImGuiIO& io = ImGui::GetIO();
+
+if (ImGui::IsMousePosValid())
+ImGui::Text("Mouse pos: (%g, %g)", io.MousePos.x, io.MousePos.y);
+else
+ImGui::Text("Mouse pos: <INVALID>");
+ImGui::SameLine();
+ImGui::Text("Mouse delta: (%g, %g)", io.MouseDelta.x, io.MouseDelta.y)*/;

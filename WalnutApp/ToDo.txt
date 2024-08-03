@@ -1,6 +1,6 @@
 CURRENT SESSION:
 
-
+- Look at waypoint editing. Create issue page...
 
 
 PRIORITY:
@@ -16,8 +16,6 @@ TO DO:
 
 - WalnutApp.cpp needs a serious re-write.....stuff is everywhere
 
-- WIP - Menu structure.
-
 - WIP - Deal with North(1), South(-1), East(1), West(-1) so that "-1" affects the haversine output properly.
 	This is overly complex due to the inability to attribute specific values to "ImGui::Combo" drop down. Can this be re-written?
 
@@ -29,7 +27,7 @@ TO DO:
 
 - Can ImGui be updated to the latest version without breaking Walnut? (NOTE: not without a serious hassle. Tried to add the ImGui remote repo and it didn't end well.)
 
-- Add 'Insert' and 'Delete' waypoint options
+- Add 'Insert' and 'Delete' 'Move Up, Move Down' waypoint options
 
 - Scratchpad for copy/pasting waypoint data as an interim to actual input from DCS
 
@@ -74,19 +72,21 @@ CLEARED:
 - DONE - BUG FIX NS/EW bug by adding b_valueChanged trigger
 
 - DONE - ISSUE 001 - BUG FIX, fuel use was changing when distance unit prefs changed. 
-Now fuel use stays same for same distance, converted or not.
+		Now fuel use stays same for same distance, converted or not.
 
 - DONE - Stop vector emplace_back race condition in which action occurred EACH while-loop. Vector kept growing!
 
 - DONE - Output not showing due to too close to window edge - [NOTE: Haversine function loop check "testmarker" is 
-	showing odd behaviour and not incrementing through the loop as expected. Did I fix this already???] - NO, not fixed!
+		showing odd behaviour and not incrementing through the loop as expected. Did I fix this already???] - NO, not fixed!
 
 - DONE - we pass 'a' into drawEntry in MathFunctions.h in a pretty lazy fashion. Name the vars better!!! 
-	[Decided to use vector position naming so that I can hash-label the waypoint IDs later to move and edit the matrix]
+		[Decided to use vector position naming so that I can hash-label the waypoint IDs later to move and edit the matrix]
 
 - DONE - write a wrapper for the InputFloat( ) that clamps the value and calls haversine on changes, (Clamp) waypoint input to limit latitude to +-90 and longitude to +- 180 degrees
 
 - DONE - trigger that calls haversine etc only on changes
 
 - DONE - add char* for unit descriptions. fix unit display on Leg Length - will need a char or string var to draw there.
+
+- DONE - Menu structure.
 

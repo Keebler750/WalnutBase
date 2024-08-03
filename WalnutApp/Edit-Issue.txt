@@ -1,0 +1,10 @@
+ToDo - Add "Insert, Delete, MoveUp, MoveDown" Waypoint editing buttons
+
+Notes:
+- what will be needed in the design to track how the waypoints move around in the vector?
+
+- What happens to the calculations if waypoints are moved?
+
+- FUTURE: What happens to saved data and moves or edits?
+
+- TOOLS: Vector insert

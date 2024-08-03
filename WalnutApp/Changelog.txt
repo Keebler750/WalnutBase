@@ -62,3 +62,4 @@ Aug 2, 2024
 - added a rudimentary cycle reduction by adding a 'sleep_for' - THIS NEEDS WORK
 - added a "Allow Idling" checkbox set to default true.
 - some minor page formatting updates
+- Add basic menu formatting and move settings etc off main page.
