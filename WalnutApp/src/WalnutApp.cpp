@@ -188,13 +188,44 @@ public:
             // EACH ' + ' BUTTON CLICK CREATES NEW WAYPOINT ENTRY and adds to DrawEntry loop:
             if (ImGui::Button(" + ") && (WaypointCounter < 100)) // button click size over-run guard!
             {
-                WaypointCounter++;  // Keep track of new waypoint items. Not the same as waypoint ID
+                WaypointCounter++; // Keep track of new waypoint items. Not the same as waypoint ID
+                
                 b_IsNewWaypoint = true; // Only Emplace_back on button click for new waypoint
+
+                b_valueChanged = true;
             }ImGui::SameLine();
 
-            ImGui::Text(" Add Waypoint (%d total, MAX = 100)", WaypointCounter);
+            ImGui::Text(" Add Waypoint (%d total, MAX = 100)", WaypointCounter); ImGui::SameLine(); ImGui::Dummy(ImVec2(20.0f, 00.0f)); ImGui::SameLine();
 
-            ImGui::Dummy(ImVec2(0.0f,10.0f));
+            // EXPERIMENTAL ' - ' BUTTON CLICK DELETE SPECIFIC WAYPOINT ENTRY and adds to DrawEntry loop:
+            if (ImGui::Button(" - ") && (WaypointCounter < 100)) // button click size over-run guard!
+            {
+                WaypointCounter--;  // Keep track of waypoint items. Not the same as waypoint ID
+
+                WaypointEntry.pop_back();
+
+                b_valueChanged = true;
+
+            }ImGui::SameLine();
+
+            ImGui::Text(" Pop_Back Last Waypoint (%d total, MAX = 100)", WaypointCounter); ImGui::SameLine();ImGui::Dummy(ImVec2(20.0f, 00.0f)); ImGui::SameLine();
+
+            // EXPERIMENTAL ' DEL ' BUTTON CLICK DELETE SPECIFIC WAYPOINT ENTRY and adds to DrawEntry loop:
+            if (ImGui::Button(" DEL ") && (WaypointCounter < 100)) // button click size over-run guard!
+            {
+                WaypointCounter--;  // Keep track of waypoint items. Not the same as waypoint ID
+                auto pos = WaypointEntry.begin();
+                WaypointEntry.erase(pos + 1 );
+                b_valueChanged = true;
+
+            }ImGui::SameLine();
+
+            ImGui::Text(" Erase specific Waypoint (%d total, MAX = 100)", WaypointCounter); ImGui::SameLine();
+
+
+
+
+            ImGui::Dummy(ImVec2(0.0f,10.0f)); // Gives height clearance for the buttons.
 
         ImGui::PopStyleColor(3);
 

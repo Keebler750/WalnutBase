@@ -12,6 +12,8 @@ PRIORITY:
 
 TO DO:
 
+- look at how to deal with strings just to assure best practices. I have a char* for the units...
+
 - Variables are scattered EVERYWHERE.....come up with a plan.
 
 - WalnutApp.cpp needs a serious re-write.....stuff is everywhere

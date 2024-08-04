@@ -5,6 +5,7 @@
 #include <functional>
 #include <numeric>
 #include <algorithm>
+#include <string>
 
 #include <chrono>
 #include <thread>
@@ -247,7 +248,7 @@ public:
 
             b_valueChanged = true;
 
-            ClampFloat2_testMarker++;
+            ClampFloat2_testMarker++; // Counting the loops
         }
     }
 
@@ -307,8 +308,7 @@ public:
             lon2 = (WaypointEntry.at(position).LON_d + (WaypointEntry.at(position).LON_m / 60) + (WaypointEntry.at(position).LON_s / 3600));
         }
 
-
-        Haversine_testMarker++; // place or turn this on to test loop count
+            Haversine_testMarker++; // counting the loops
 
         // distance between latitudes and longitudes
         float deltaLAT = ((lat2 * (signNorthSouth(WaypointEntry.at(position).NS))) - (lat1 * (signNorthSouth(WaypointEntry.at(position - 1).NS)))) *

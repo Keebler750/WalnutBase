@@ -63,3 +63,8 @@ Aug 2, 2024
 - added a "Allow Idling" checkbox set to default true.
 - some minor page formatting updates
 - Add basic menu formatting and move settings etc off main page.
+
+feature-2
+Aug 4, 2024
+- WIP - edit/delete/move buttons for waypoints and re-calc logic
+- ADD 'name' feature to waypoints to decouple from strict sequential waypoint numbering (especially useful if we re-order waypoints!)
