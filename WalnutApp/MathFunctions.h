@@ -10,6 +10,9 @@
 #include <chrono>
 #include <thread>
 
+// This is used as the position index inside the vector of waypoint data.
+static int g_vectorPOS;
+
 // VARS for DEBUG LOOP CHECKS:
 static int ClampFloat1_testMarker = 0;
 static int ClampFloat2_testMarker = 0;
@@ -44,7 +47,7 @@ static float defaultSize = 70.0f;
 static float scaledElementSize = 70.0f;
 
 static int units = 2;   // Sets Units default ENUM to nautical miles
-static bool b_debug = false;
+static bool b_debug = true;
 static int delay = 40;
 static bool b_allowIdling = true;
 
@@ -80,8 +83,12 @@ struct WPT
     }
 };
 
+
+
 // STORE ALL WAYPOINT DATA IN VECTOR, if this isn't external and static it won't save properly due to...... while-loop render?
 static std::vector<WPT> WaypointEntry;
+
+
 
 // Modular creation and storage of waypoint items instead of one big static display of onscreen entries.
 class WAYPOINT
@@ -105,7 +112,7 @@ public:
     }
 
     // FUNCTION - pass in var which represents waypoint number FOR NOW. Helps with screen element IDs as well, for the hash.
-    void drawEntry(int m_vectorPOS, int units)
+    void drawEntry()
     {
         if (b_IsNewWaypoint) // This check mechanism allows us to only push back an element ONCE when creating a new waypoint, to avoid a race condition.
         {
@@ -121,11 +128,11 @@ public:
         // ImGui::Text("Entry size: %d", Entry.size());
         ImGui::PushItemWidth(scaledElementSize); // sets input box width until the POP below.
 
-            ImGui::Text("Waypoint : %d", m_vectorPOS);
+            ImGui::Text("Waypoint : %d", g_vectorPOS);
 
             //This differentiates the ImGui data labels through each loop
             // to avoid dupes because it is a HASH of PushID + DataLabel
-            ImGui::PushID(m_vectorPOS);     
+            ImGui::PushID(g_vectorPOS);     
 
                     //INPUT AND DISPLAY WPT LAT, including NORTH/SOUTH:
                     ImGui::Text("LAT   ");
@@ -134,9 +141,9 @@ public:
 
                 ImGui::PushItemWidth(scaledElementSize);/// width for combo button
 
-                    if (ImGui::Combo("##1", &WaypointEntry.at(m_vectorPOS).NS, "North\0South\0", 2))
+                    if (ImGui::Combo("##1", &WaypointEntry.at(g_vectorPOS).NS, "North\0South\0", 2))
                     {
-                        WaypointEntry.at(m_vectorPOS).NS = WaypointEntry.at(m_vectorPOS).NS;
+                        WaypointEntry.at(g_vectorPOS).NS = WaypointEntry.at(g_vectorPOS).NS;
                         b_valueChanged = true;
                     }
 
@@ -148,16 +155,16 @@ public:
                     // INPUT LATITUDE:
                     // NULL takes away the increment/decrement range creation button
                     // Clamp values: 90 Latitude degrees
-                    ClampInputFloat("DEG    ##LAT1", &WaypointEntry.at(m_vectorPOS).LAT_d, NULL, NULL, "%.5f", 0.0f, 90.0f, NULL); ImGui::SameLine();
-                    ClampInputFloat("MIN    ##LAT1", &WaypointEntry.at(m_vectorPOS).LAT_m, NULL, NULL, "%.5f", 0.0f, 60.0f, NULL); ImGui::SameLine();
-                    ClampInputFloat("SEC    ##LAT1", &WaypointEntry.at(m_vectorPOS).LAT_s, NULL, NULL, "%.5f", 0.0f, 60.0f, NULL);
+                    ClampInputFloat("DEG    ##LAT1", &WaypointEntry.at(g_vectorPOS).LAT_d, NULL, NULL, "%.5f", 0.0f, 90.0f, NULL); ImGui::SameLine();
+                    ClampInputFloat("MIN    ##LAT1", &WaypointEntry.at(g_vectorPOS).LAT_m, NULL, NULL, "%.5f", 0.0f, 60.0f, NULL); ImGui::SameLine();
+                    ClampInputFloat("SEC    ##LAT1", &WaypointEntry.at(g_vectorPOS).LAT_s, NULL, NULL, "%.5f", 0.0f, 60.0f, NULL);
 
                     // COLUMN 2: on the second waypoint, add column two input and display: Flight profile
-                    if (m_vectorPOS >= 1)
+                    if (g_vectorPOS >= 1)
                     {
                             ImGui::SameLine(); ImGui::Dummy(ImVec2(50.0f, 0.0f)); ImGui::SameLine();
 
-                            ImGui::InputInt("  Flight Profile", &WaypointEntry.at(m_vectorPOS).PROFILE, NULL, NULL);
+                            ImGui::InputInt("  Flight Profile", &WaypointEntry.at(g_vectorPOS).PROFILE, NULL, NULL);
                     }
 
                     //INPUT AND DISPLAY WPT LONG, including EAST/WEST:
@@ -166,9 +173,9 @@ public:
                 ImGui::PushItemWidth(scaledElementSize);/// width for combo button
 
                     //Set East/West:
-                    if (ImGui::Combo("##2", &WaypointEntry.at(m_vectorPOS).EW, "East\0West\0", 2))
+                    if (ImGui::Combo("##2", &WaypointEntry.at(g_vectorPOS).EW, "East\0West\0", 2))
                     {
-                        WaypointEntry.at(m_vectorPOS).EW = WaypointEntry.at(m_vectorPOS).EW;
+                        WaypointEntry.at(g_vectorPOS).EW = WaypointEntry.at(g_vectorPOS).EW;
                         b_valueChanged = true;
                     }
 
@@ -177,16 +184,16 @@ public:
                     // INPUT LONGITUDE:
                     // NULL takes away the increment/decrement range creation buttons
                     // Clamp values, 180 Longitude degrees
-                    ClampInputFloat("DEG    ##LON1", &WaypointEntry.at(m_vectorPOS).LON_d, NULL, NULL, "%.5f", 0.0f, 180.0f, NULL); ImGui::SameLine();
-                    ClampInputFloat("MIN    ##LON1", &WaypointEntry.at(m_vectorPOS).LON_m, NULL, NULL, "%.5f", 0.0f, 60.0f, NULL); ImGui::SameLine();
-                    ClampInputFloat("SEC    ##LON1", &WaypointEntry.at(m_vectorPOS).LON_s, NULL, NULL, "%.5f", 0.0f, 60.0f, NULL);
+                    ClampInputFloat("DEG    ##LON1", &WaypointEntry.at(g_vectorPOS).LON_d, NULL, NULL, "%.5f", 0.0f, 180.0f, NULL); ImGui::SameLine();
+                    ClampInputFloat("MIN    ##LON1", &WaypointEntry.at(g_vectorPOS).LON_m, NULL, NULL, "%.5f", 0.0f, 60.0f, NULL); ImGui::SameLine();
+                    ClampInputFloat("SEC    ##LON1", &WaypointEntry.at(g_vectorPOS).LON_s, NULL, NULL, "%.5f", 0.0f, 60.0f, NULL);
 
                     char* unitString = "test";
 
                     // COLUMN 2: INPUT AND DISPLAY: Leg distance and fuel used
                     // Don't calc (OR SHOW!) a distance if we only have one waypoint
                     // ---> Calculate the distance and store the data in the vector
-                    if (m_vectorPOS >= 1)
+                    if (g_vectorPOS >= 1)
                     {
                         ImGui::SameLine(); ImGui::Dummy(ImVec2(50.0f, 0.0f)); ImGui::SameLine();
                         ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor::HSV(0.25f, 0.7f, 0.7f, 0.3f));
@@ -194,7 +201,7 @@ public:
                             // Re-run when any of the fuel, unit or distance data have changed.
                             if (b_valueChanged)
                             {
-                                runDistanceCalc(m_vectorPOS);
+                                doCalculations();
                             }
 
                             // Set the text label:
@@ -203,10 +210,10 @@ public:
                             if (units == KM)
                                 unitString = "KM";
 
-                            WaypointEntry.at(m_vectorPOS).FUEL = (int)(CorrectedFuelRate * WaypointEntry.at(m_vectorPOS).DISTANCE);
-                            ImGui::InputFloat("##LegDist", &WaypointEntry.at(m_vectorPOS).DISTANCE, NULL, NULL, "%.0f"); ImGui::SameLine(); ImGui::Text("Leg Length (%s)", unitString); // <<<<<<<<
+                            //WaypointEntry.at(m_vectorPOS).FUEL = (int)(CorrectedFuelRate * WaypointEntry.at(m_vectorPOS).DISTANCE);
+                            ImGui::InputFloat("##LegDist", &WaypointEntry.at(g_vectorPOS).DISTANCE, NULL, NULL, "%.0f"); ImGui::SameLine(); ImGui::Text("Leg Length (%s)", unitString); // <<<<<<<<
                             ImGui::SameLine(); ImGui::Dummy(ImVec2(30.0f, 0.0f)); ImGui::SameLine();
-                            ImGui::InputInt("Approx. Fuel Used (LBS)", &WaypointEntry.at(m_vectorPOS).FUEL, NULL, NULL);
+                            ImGui::InputInt("Approx. Fuel Used (LBS)", &WaypointEntry.at(g_vectorPOS).FUEL, NULL, NULL);
 
                         ImGui::PopStyleColor();
                     }
@@ -216,6 +223,31 @@ public:
             ImGui::Dummy(ImVec2(0.0f, 10.0f)); ImGui::Separator(); ImGui::Dummy(ImVec2(0.0f, 0.0f));
 
         ImGui::PopItemWidth();
+    }
+
+    void drawDebugInfo()
+    {
+        ImGui::Dummy(ImVec2(0.0f, 10.0f)); ImGui::Separator(); ImGui::Dummy(ImVec2(0.0f, 0.0f));
+
+        //Loops:
+        ImGui::Text("DEBUG TEST for Looping Function Increments:"); ImGui::SameLine(); ImGui::Text("  While - %d  ", WhileLoop_testMarker); ImGui::SameLine(); ImGui::Text("  HAV - %d  ", Haversine_testMarker);
+        ImGui::SameLine(); ImGui::Text("  Clamp1 - %d  ", ClampFloat1_testMarker); ImGui::SameLine(); ImGui::Text("  Clamp2 - %d  ", ClampFloat2_testMarker); ImGui::SameLine(); ImGui::Text("  Draw - %d  ", DrawEntry_testMarker); ImGui::SameLine();
+
+        //Data:
+        ImGui::Text("  m_vectorPOS: %d", g_vectorPOS); ImGui::SameLine(); ImGui::Text("  WaypointEntry.size(): %d", WaypointEntry.size()); ImGui::SameLine(); ImGui::Text("  WaypointEntry.capacity(): %d", WaypointEntry.capacity()); ImGui::SameLine(); if(g_vectorPOS > 0)ImGui::Text(" 0 data point: %.5f", WaypointEntry.at(0).LAT_d);
+
+    }
+
+    void DrawMain()
+    {
+        for (g_vectorPOS = 0; g_vectorPOS < WaypointCounter; g_vectorPOS++)
+        {
+            // Note - ITEM is instantiated in EntryPoint.h before the while-loop.
+            drawEntry(); // Modular draw call, per the number of waypoints
+        }
+
+        b_valueChanged = false;
+
     }
 
     void totalFuelCalc()
@@ -295,25 +327,25 @@ public:
 
     // C++ code for the haversine formula, which outputs in NAUTICAL MILES
     // Core math for distance calc from position data. Requires decimal degrees to four place precision.
-    float haversine(int position/*, float lat1, float lon1, float lat2, float lon2*/)
+    float haversine(/*, float lat1, float lon1, float lat2, float lon2*/)
     {
         // init
         float lat1{ 0.0f }, lat2{ 0.0f }, lon1{ 0.0f }, lon2{ 0.0f };
 
-        if (position >= 1)
+        if (g_vectorPOS >= 1)
         {   // Calculate the decimal degree value of the LAT/LONG data for use with the rest of the haversine
-            lat1 = (WaypointEntry.at(position - 1).LAT_d + (WaypointEntry.at(position - 1).LAT_m / 60) + (WaypointEntry.at(position - 1).LAT_s / 3600));
-            lon1 = (WaypointEntry.at(position - 1).LON_d + (WaypointEntry.at(position - 1).LON_m / 60) + (WaypointEntry.at(position - 1).LON_s / 3600));
-            lat2 = (WaypointEntry.at(position).LAT_d + (WaypointEntry.at(position).LAT_m / 60) + (WaypointEntry.at(position).LAT_s / 3600));
-            lon2 = (WaypointEntry.at(position).LON_d + (WaypointEntry.at(position).LON_m / 60) + (WaypointEntry.at(position).LON_s / 3600));
+            lat1 = (WaypointEntry.at(g_vectorPOS - 1).LAT_d + (WaypointEntry.at(g_vectorPOS - 1).LAT_m / 60) + (WaypointEntry.at(g_vectorPOS - 1).LAT_s / 3600));
+            lon1 = (WaypointEntry.at(g_vectorPOS - 1).LON_d + (WaypointEntry.at(g_vectorPOS - 1).LON_m / 60) + (WaypointEntry.at(g_vectorPOS - 1).LON_s / 3600));
+            lat2 = (WaypointEntry.at(g_vectorPOS).LAT_d + (WaypointEntry.at(g_vectorPOS).LAT_m / 60) + (WaypointEntry.at(g_vectorPOS).LAT_s / 3600));
+            lon2 = (WaypointEntry.at(g_vectorPOS).LON_d + (WaypointEntry.at(g_vectorPOS).LON_m / 60) + (WaypointEntry.at(g_vectorPOS).LON_s / 3600));
         }
 
             Haversine_testMarker++; // counting the loops
 
         // distance between latitudes and longitudes
-        float deltaLAT = ((lat2 * (signNorthSouth(WaypointEntry.at(position).NS))) - (lat1 * (signNorthSouth(WaypointEntry.at(position - 1).NS)))) *
+        float deltaLAT = ((lat2 * (signNorthSouth(WaypointEntry.at(g_vectorPOS).NS))) - (lat1 * (signNorthSouth(WaypointEntry.at(g_vectorPOS - 1).NS)))) *
             M_PI / 180.0f;
-        float deltaLON = ((lon2 * (signEastWest(WaypointEntry.at(position).EW))) - (lon1 * (signEastWest(WaypointEntry.at(position - 1).EW)))) *
+        float deltaLON = ((lon2 * (signEastWest(WaypointEntry.at(g_vectorPOS).EW))) - (lon1 * (signEastWest(WaypointEntry.at(g_vectorPOS - 1).EW)))) *
             M_PI / 180.0f;
 
         // convert to radians
@@ -329,7 +361,9 @@ public:
         return (0.5399568f) * rad * c; // Output is in NAUTICAL MILES (correction factor listed is from KM to NM).
     }
 
-    void runDistanceCalc(int position)
+    
+    // Do this until popping out of the loop in DrawMain and shutting off b_valueChanged.
+    void doCalculations( )
     {
         if (units == NM)
             conversion = convert_NM;
@@ -339,9 +373,10 @@ public:
 
         CorrectedFuelRate = (1 / conversion) * fuelFlow;
 
-        WaypointEntry.at(position).DISTANCE = conversion * haversine(position);
+        WaypointEntry.at(g_vectorPOS).DISTANCE = conversion * haversine();
 
-        b_valueChanged = false;
+        WaypointEntry.at(g_vectorPOS).FUEL = (int)(CorrectedFuelRate * WaypointEntry.at(g_vectorPOS).DISTANCE);
+
     }
 
 };

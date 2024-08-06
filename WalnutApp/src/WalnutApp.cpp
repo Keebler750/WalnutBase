@@ -168,16 +168,13 @@ public:
 
             if (b_debug)
             {
-                ImGui::Dummy(ImVec2(0.0f, 10.0f)); ImGui::Separator(); ImGui::Dummy(ImVec2(0.0f, 0.0f));
-
-                ImGui::Text("DEBUG TEST for Looping Function Increments:"); ImGui::SameLine(); ImGui::Text("  While - %d  ", WhileLoop_testMarker); ImGui::SameLine(); ImGui::Text("  HAV - %d  ", Haversine_testMarker);
-                ImGui::SameLine(); ImGui::Text("  Clamp1 - %d  ", ClampFloat1_testMarker); ImGui::SameLine(); ImGui::Text("  Clamp2 - %d  ", ClampFloat2_testMarker); ImGui::SameLine(); ImGui::Text("  Draw - %d  ", DrawEntry_testMarker);
+                item.drawDebugInfo();
             }
             
             WhileLoop_testMarker++;
 
         ImGui::Dummy(ImVec2(0.0f, 10.0f)); ImGui::Separator(); ImGui::Dummy(ImVec2(0.0f, 10.0f));
-        // MIDDLE: DRAW WAYPOINT ELEMENTS
+            // MIDDLE: DRAW WAYPOINT ELEMENTS
 
             // Make the button inside the push tags an obvious color
         ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0.25f, 0.7f, 0.4f));
@@ -222,25 +219,16 @@ public:
 
             ImGui::Text(" Erase specific Waypoint (%d total, MAX = 100)", WaypointCounter); ImGui::SameLine();
 
-
-
-
             ImGui::Dummy(ImVec2(0.0f,10.0f)); // Gives height clearance for the buttons.
 
         ImGui::PopStyleColor(3);
 
-            // This is used as the position index inside the vector of waypoint data.
-            static int VectorPosition = 0;
+            // MAIN DRAW HERE:
+            item.DrawMain();    // all draw and calc done in MathFunctions.h file....loop contents from here have been moved.
+        
 
-            for (VectorPosition = 0; VectorPosition < WaypointCounter; VectorPosition++)
-            {
-                // Note - ITEM is instantiated in EntryPoint.h before the while-loop.
-                item.drawEntry(VectorPosition, units); // Modular draw call, per the number of waypoints
-            }
-
-        // FOOTER: (TOTALS at bottom of main page)
-
-            if (VectorPosition >= 2)
+            // FOOTER: (TOTALS at bottom of main page)
+            if (g_vectorPOS >= 2)
             {
                 item.totalFuelCalc();
                 item.totalDistanceCalc();

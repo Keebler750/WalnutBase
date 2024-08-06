@@ -3,6 +3,8 @@ CURRENT SESSION:
 - Look at waypoint editing. Create issue page...
 
 
+
+
 PRIORITY:
 
 - Take all calculations out of the render loop.
@@ -76,6 +78,9 @@ CLEARED:
 - DONE - ISSUE 001 - BUG FIX, fuel use was changing when distance unit prefs changed. 
 		Now fuel use stays same for same distance, converted or not.
 
+- BUG - SQUASHED -  Moved where b_valueChanged was shut off, allowing the loop to do all recalcs. DrawMain created in class to house the loop and logic.
+	(new clamp/recalc structure is not recalculating ALL entries. Extends all the way down into test-1 BRANCH - this is the perfect place to fix it.)
+
 - DONE - Stop vector emplace_back race condition in which action occurred EACH while-loop. Vector kept growing!
 
 - DONE - Output not showing due to too close to window edge - [NOTE: Haversine function loop check "testmarker" is 
@@ -91,4 +96,6 @@ CLEARED:
 - DONE - add char* for unit descriptions. fix unit display on Leg Length - will need a char or string var to draw there.
 
 - DONE - Menu structure.
+
+- DONE - move Debug into its own function
 

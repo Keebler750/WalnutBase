@@ -57,6 +57,7 @@ July 31, 2024
 - add the unitString text as a label for the distance output.
 -- MERGED into test-1 --
 
+
 feature-1
 Aug 2, 2024
 - added a rudimentary cycle reduction by adding a 'sleep_for' - THIS NEEDS WORK
@@ -64,7 +65,18 @@ Aug 2, 2024
 - some minor page formatting updates
 - Add basic menu formatting and move settings etc off main page.
 
+
 feature-2
 Aug 4, 2024
 - WIP - edit/delete/move buttons for waypoints and re-calc logic
 - ADD 'name' feature to waypoints to decouple from strict sequential waypoint numbering (especially useful if we re-order waypoints!)
+- moved fuel calcs also into the calc function and re-named it to doCalculations() NOTE: There is a re-calc bug.
+- created a debug method in WAYPOINT
+- refactored to a global vectorPOS and stopped passing around multiple copies: "position," "m_vectorPOS," "VectorPosition" etc in all the methods and calcs.
+
+
+feature-2
+Aug 5, 2024
+- created new method DrawMain() to move the draw loop into the WAYPOINT class. Then shutting down the b_valueChanged bool INSIDE the method but OUTSIDE the for loop
+	means it will cycle through ALL calcs/waypoints before stopping. This avoids the missing recalcs. 
+	(it only cycled through the recalcs ONCE instead of 'recalcs * NumWaypoints')
