@@ -2,7 +2,7 @@ ToDo - Add "Insert, Delete, MoveUp, MoveDown" Waypoint editing buttons
 
 BUGS:
 
-- BUG - edited values like to bypass the recalc. Why? NOTES: When running calc after b_valueChanged we are passing ONLY specific vector pos, 
+- FIXED: BUG - edited values like to bypass the recalc. Why? NOTES: When running calc after b_valueChanged we are passing ONLY specific vector pos, 
 	not recalculating entire vector. So, we need a way to trigger calc not only after value change, but vector structure change.
 
 
@@ -13,7 +13,7 @@ Notes:
 
 - FUTURE: What happens to saved data and moves or edits?
 
-- TOOLS: Vector insert
+- TOOLS: Vector insert, erase, swap
 
 - The waypoint data represents the current structure, but the unedited location is AT THE END of the vector, until 
 	we tell it otherwise. This is why ADD puts new data at the end. 

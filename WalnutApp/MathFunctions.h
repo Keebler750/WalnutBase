@@ -25,6 +25,8 @@ enum setUnits
     KM = 1, NM = 2
 };
 
+char* unitString = "test";
+
 static float conversion = 0.0f;
 
 const float convert_KM = 1.8520000f;
@@ -47,7 +49,7 @@ static float defaultSize = 70.0f;
 static float scaledElementSize = 70.0f;
 
 static int units = 2;   // Sets Units default ENUM to nautical miles
-static bool b_debug = true;
+static bool b_debug = false;
 static int delay = 40;
 static bool b_allowIdling = true;
 
@@ -124,6 +126,25 @@ public:
 
         DrawEntry_testMarker++; //used to test the loop incrementation. Output is on WalnutApp.cpp near the "+" button
 
+        ImGui::PushID(g_vectorPOS);
+
+        ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 10.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10.0f, 8.0f));
+        ImGui::BeginChild("Navigation##", ImVec2(100, 100), true, ImGuiWindowFlags_NoScrollbar);
+
+         
+        ImGui::Button("Insert Above", ImVec2(80.0f, 20.0f));
+        ImGui::Dummy(ImVec2(0.0f, 4.0f));
+        ImGui::Button("DELETE", ImVec2(80.0f, 20.0f));
+        ImGui::Dummy(ImVec2(0.0f, 4.0f));
+        ImGui::Button("Insert Below", ImVec2(80.0f, 20.0f));
+
+        ImGui::EndChild(); ImGui::SameLine();
+
+        ImGui::BeginChild("Waypoints##", ImVec2(1000.0f, 100.0f), true, ImGuiWindowFlags_NoScrollbar);
+
+      
+
         // SIZE TEST to make sure vector is not growing due to loop:
         // ImGui::Text("Entry size: %d", Entry.size());
         ImGui::PushItemWidth(scaledElementSize); // sets input box width until the POP below.
@@ -132,14 +153,14 @@ public:
 
             //This differentiates the ImGui data labels through each loop
             // to avoid dupes because it is a HASH of PushID + DataLabel
-            ImGui::PushID(g_vectorPOS);     
+
 
                     //INPUT AND DISPLAY WPT LAT, including NORTH/SOUTH:
                     ImGui::Text("LAT   ");
 
             ImGui::SameLine();
 
-                ImGui::PushItemWidth(scaledElementSize);/// width for combo button
+                ImGui::PushItemWidth(scaledElementSize); /// width for combo button
 
                     if (ImGui::Combo("##1", &WaypointEntry.at(g_vectorPOS).NS, "North\0South\0", 2))
                     {
@@ -147,9 +168,8 @@ public:
                         b_valueChanged = true;
                     }
 
-                ImGui::SameLine();
+                ImGui::SameLine(); ImGui::PopItemWidth(); ImGui::SameLine(); /// end width for combo button
 
-                ImGui::PopItemWidth(); ImGui::SameLine();
                 //testMarker++; //used to test the loop incrementation. Output is on WalnutApp.cpp near the "+" button
 
                     // INPUT LATITUDE:
@@ -170,7 +190,7 @@ public:
                     //INPUT AND DISPLAY WPT LONG, including EAST/WEST:
                     ImGui::Text("LONG"); ImGui::SameLine();
 
-                ImGui::PushItemWidth(scaledElementSize);/// width for combo button
+                ImGui::PushItemWidth(scaledElementSize); /// width for combo button
 
                     //Set East/West:
                     if (ImGui::Combo("##2", &WaypointEntry.at(g_vectorPOS).EW, "East\0West\0", 2))
@@ -179,7 +199,7 @@ public:
                         b_valueChanged = true;
                     }
 
-                ImGui::SameLine(); ImGui::PopItemWidth(); ImGui::SameLine();
+                ImGui::SameLine(); ImGui::PopItemWidth(); ImGui::SameLine(); /// end width for combo button
 
                     // INPUT LONGITUDE:
                     // NULL takes away the increment/decrement range creation buttons
@@ -188,7 +208,7 @@ public:
                     ClampInputFloat("MIN    ##LON1", &WaypointEntry.at(g_vectorPOS).LON_m, NULL, NULL, "%.5f", 0.0f, 60.0f, NULL); ImGui::SameLine();
                     ClampInputFloat("SEC    ##LON1", &WaypointEntry.at(g_vectorPOS).LON_s, NULL, NULL, "%.5f", 0.0f, 60.0f, NULL);
 
-                    char* unitString = "test";
+                    //char* unitString = "test";
 
                     // COLUMN 2: INPUT AND DISPLAY: Leg distance and fuel used
                     // Don't calc (OR SHOW!) a distance if we only have one waypoint
@@ -212,17 +232,38 @@ public:
 
                             //WaypointEntry.at(m_vectorPOS).FUEL = (int)(CorrectedFuelRate * WaypointEntry.at(m_vectorPOS).DISTANCE);
                             ImGui::InputFloat("##LegDist", &WaypointEntry.at(g_vectorPOS).DISTANCE, NULL, NULL, "%.0f"); ImGui::SameLine(); ImGui::Text("Leg Length (%s)", unitString); // <<<<<<<<
-                            ImGui::SameLine(); ImGui::Dummy(ImVec2(30.0f, 0.0f)); ImGui::SameLine();
-                            ImGui::InputInt("Approx. Fuel Used (LBS)", &WaypointEntry.at(g_vectorPOS).FUEL, NULL, NULL);
+                            ImGui::SameLine(); ImGui::Dummy(ImVec2(20.0f, 0.0f)); ImGui::SameLine();
+                            ImGui::InputInt("Fuel Used (LBS)", &WaypointEntry.at(g_vectorPOS).FUEL, NULL, NULL);
 
                         ImGui::PopStyleColor();
                     }
 
-            ImGui::PopID();
 
-            ImGui::Dummy(ImVec2(0.0f, 10.0f)); ImGui::Separator(); ImGui::Dummy(ImVec2(0.0f, 0.0f));
+            //ImGui::Dummy(ImVec2(0.0f, 10.0f)); ImGui::Separator(); ImGui::Dummy(ImVec2(0.0f, 0.0f));
 
         ImGui::PopItemWidth();
+
+        ImGui::EndChild(); ImGui::SameLine();
+
+        ImGui::BeginChild("end##", ImVec2(100, 100), true, ImGuiWindowFlags_NoScrollbar);
+
+
+        ImGui::Dummy(ImVec2(0.0f, 10.0f));
+        ImGui::Button("Move Up##", ImVec2(80.0f, 20.0f));
+        ImGui::Dummy(ImVec2(0.0f, 10.0f));
+        ImGui::Button("Move Down##", ImVec2(80.0f, 20.0f));
+
+        ImGui::EndChild(); 
+
+        ImGui::PopStyleVar();
+        ImGui::PopStyleVar();
+
+
+
+
+        ImGui::PopID();
+
+
     }
 
     void drawDebugInfo()

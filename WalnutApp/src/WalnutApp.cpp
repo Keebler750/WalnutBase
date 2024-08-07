@@ -162,7 +162,7 @@ public:
                 }
             }
 
-            ImGui::Dummy(ImVec2(45.0f, 0.0f)); ImGui::SameLine();
+            ImGui::Dummy(ImVec2(20.0f, 0.0f)); ImGui::SameLine();
             if (ImGui::InputFloat("Fuel Flow, LBS/nm", &fuelFlow, NULL, NULL, "%.0f"))
                 b_valueChanged = true;
 
@@ -226,6 +226,7 @@ public:
             // MAIN DRAW HERE:
             item.DrawMain();    // all draw and calc done in MathFunctions.h file....loop contents from here have been moved.
         
+            //ImGui::Dummy(ImVec2(0.0f, 10.0f)); ImGui::SameLine();
 
             // FOOTER: (TOTALS at bottom of main page)
             if (g_vectorPOS >= 2)
@@ -234,11 +235,13 @@ public:
                 item.totalDistanceCalc();
                 item.fuelRemainingCalc();
 
+
             ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor::HSV(0.25f, 0.7f, 0.7f, 0.3f));
 
-                ImGui::SameLine(); ImGui::Dummy(ImVec2(20.0f, 30.0f)); //ImGui::SameLine();
-                ImGui::InputInt("Total Fuel Used (LBS)", &totalFuelUsed, NULL, NULL);  ImGui::SameLine(); ImGui::Dummy(ImVec2(20.0f, 0.0f)); ImGui::SameLine();
-                ImGui::InputFloat("Total Distance (UNITS)", &totalDistance, NULL, NULL, "%.0f"); ImGui::SameLine(); ImGui::Dummy(ImVec2(20.0f, 0.0f)); ImGui::SameLine();
+             ImGui::Dummy(ImVec2(0.0f, 50.0f));
+
+             ImGui::Dummy(ImVec2(40.0f, 0.0f)); ImGui::SameLine(); ImGui::InputInt("Total Fuel Used (LBS)", &totalFuelUsed, NULL, NULL);  ImGui::SameLine(); ImGui::Dummy(ImVec2(20.0f, 0.0f)); ImGui::SameLine();
+             ImGui::InputFloat("Total Distance", &totalDistance, NULL, NULL, "%.0f"); ImGui::SameLine(); ImGui::Text("%s", unitString); ImGui::SameLine(); ImGui::Dummy(ImVec2(20.0f, 0.0f)); ImGui::SameLine();
                 ImGui::InputInt("Fuel Remaining (LBS)", &fuelRemaining, NULL, NULL);
 
             ImGui::PopStyleColor();

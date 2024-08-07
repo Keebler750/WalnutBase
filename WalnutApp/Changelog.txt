@@ -80,3 +80,8 @@ Aug 5, 2024
 - created new method DrawMain() to move the draw loop into the WAYPOINT class. Then shutting down the b_valueChanged bool INSIDE the method but OUTSIDE the for loop
 	means it will cycle through ALL calcs/waypoints before stopping. This avoids the missing recalcs. 
 	(it only cycled through the recalcs ONCE instead of 'recalcs * NumWaypoints')
+
+
+feature-2
+Aug 6, 2024
+- Add child windows with borders, rounded corner format, and some dummy buttons to start as placeholders for WPT edits
