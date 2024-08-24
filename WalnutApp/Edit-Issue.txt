@@ -1,9 +1,13 @@
-ToDo - Add "Insert, Delete, MoveUp, MoveDown" Waypoint editing buttons
+TODO:
+
+- Add "Insert, Delete, MoveUp, MoveDown" Waypoint editing buttons
+
+- would iterator implementation help?
+
 
 BUGS:
 
-- FIXED: BUG - edited values like to bypass the recalc. Why? NOTES: When running calc after b_valueChanged we are passing ONLY specific vector pos, 
-	not recalculating entire vector. So, we need a way to trigger calc not only after value change, but vector structure change.
+
 
 
 Notes:

@@ -1,11 +1,19 @@
 CURRENT SESSION:
 
-- Look at waypoint editing. Create issue page...
+- MOSTLY DONE - Look at waypoint editing. Create issue page...
+
+- get nav/edit waypoint functioning without bugs!
+
+- start looking at flight profile structure
 
 
 
 
 PRIORITY:
+
+- Waypoints need to be name-able with a string so when we move them in the sequence we can still ID them
+
+- BUG - g_vectorPOS isn't actually tracking the element number....needs to be related to any iterator OR at least understand the math!!!!!!
 
 - Take all calculations out of the render loop.
 
@@ -14,13 +22,24 @@ PRIORITY:
 
 TO DO:
 
-- look at how to deal with strings just to assure best practices. I have a char* for the units...
+- Understand app structure: Element Value Editing vs Vector Structure Modification vs GUI display/input actions. The vector 
+structure is a separate thing from what you see - those are EDITS! pop_back bug caused because vector structure being edited while screen is 
+trying access data at a moved location in memory. (and iterators not valid?)
+
+- Loop throught vector.begin() and vector.end() instead of incrementing waypointCounter++
+
+- if I want to save a Name string, look at the char[] vs std::string issue and possible callback resize issue. Also
+look at GP Calc to figure out how I stored strings in vectors.
+
+- Add pre-planned waypoints, both for debugging ease, and as future feature for maps features - airbases, etc.
+
+- look at how to deal with strings just to assure best practices. I have a char* for the units... printf-type function doesn't take a string :shock:
 
 - Variables are scattered EVERYWHERE.....come up with a plan.
 
 - WalnutApp.cpp needs a serious re-write.....stuff is everywhere
 
-- WIP - Deal with North(1), South(-1), East(1), West(-1) so that "-1" affects the haversine output properly.
+- WIP - Immprove -- North(1), South(-1), East(1), West(-1) so that "-1" affects the haversine output properly.
 	This is overly complex due to the inability to attribute specific values to "ImGui::Combo" drop down. Can this be re-written?
 
 - WIP - Look at type-conversion issues with int, float and/or double throughout the code
@@ -72,6 +91,11 @@ WISH LIST:
 
 
 CLEARED:
+
+- DONE - FIXED: - BUG - Deleting last waypoint causes a crash due to draw after delete in loop.
+
+- DONE - FIXED: BUG - edited values like to bypass the recalc. Why? NOTES: When running calc after b_valueChanged we are passing ONLY specific vector pos, 
+	not recalculating entire vector. So, we need a way to trigger calc not only after value change, but vector structure change.
 
 - DONE - BUG FIX NS/EW bug by adding b_valueChanged trigger
 

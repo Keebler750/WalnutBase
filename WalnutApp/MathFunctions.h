@@ -1,14 +1,14 @@
 #pragma once
 
-#include <cmath>
+//#include <cmath>
+//#include <functional>
+//#include <chrono>
 #include <vector>
-#include <functional>
-#include <numeric>
-#include <algorithm>
+#include <numeric> // std::accumulate
+#include <algorithm> // std::clamp
 #include <string>
-
-#include <chrono>
-#include <thread>
+#include <thread> // std::this_thread, std::chrono::milliseconds
+#include <imgui.h>
 
 // This is used as the position index inside the vector of waypoint data.
 static int g_vectorPOS;
@@ -42,7 +42,7 @@ static int totalFuelUsed = 0;
 static float totalDistance = 0.0f;
 static int  fuelRemaining = 0;
 
-static float startFuel = 0;
+static float startFuel = 10980.0f;
 
 static float fontSize = 0.7f;
 static float defaultSize = 70.0f;
@@ -58,6 +58,9 @@ static bool b_IsNewWaypoint = false;
 static int WaypointCounter = 0;
 
 static bool b_valueChanged = false;
+static bool b_requestPopBack = false;   // If we are requesting a last-waypoint deletion, we can't do it in the draw-table.
+
+static char TextInput [11] = "";
 
 // STRUCT data type combining all of the waypoint floats.
 struct WPT
@@ -69,17 +72,18 @@ struct WPT
     float DISTANCE;
     int FUEL;
     int NS, EW;
+    //std::string NAME;
 
-        // Default Constructor with initialization
+    // Default Constructor with initialization
     WPT()
-        :LAT_d(0.0f), LAT_m(0.0f), LAT_s(0.0f), LON_d(0.0f), LON_m(0.0f), LON_s(0.0f), PROFILE(0), DISTANCE(0.0f), FUEL(0), NS(0), EW(0)
+        :LAT_d(0.0f), LAT_m(0.0f), LAT_s(0.0f), LON_d(0.0f), LON_m(0.0f), LON_s(0.0f), PROFILE(0), DISTANCE(0.0f), FUEL(0), NS(0), EW(0)//, NAME("")
     {
 
     }
 
-        // Constructor, initialized by parameters passed in.
-    WPT(float a, float b, float c, float d, float e, float f, int g, float h, int i, int j, int k)
-        :LAT_d(a), LAT_m(b), LAT_s(c), LON_d(d), LON_m(e), LON_s(f), PROFILE(g), DISTANCE(h), FUEL(i), NS(j), EW(k)
+    // Constructor, initialized by parameters passed in.
+    WPT(float a, float b, float c, float d, float e, float f, int g, float h, int i, int j, int k /*, std::string l*/)
+        :LAT_d(a), LAT_m(b), LAT_s(c), LON_d(d), LON_m(e), LON_s(f), PROFILE(g), DISTANCE(h), FUEL(i), NS(j), EW(k)//, NAME(l)
     {
 
     }
@@ -89,6 +93,7 @@ struct WPT
 
 // STORE ALL WAYPOINT DATA IN VECTOR, if this isn't external and static it won't save properly due to...... while-loop render?
 static std::vector<WPT> WaypointEntry;
+
 
 
 
@@ -104,56 +109,66 @@ public:
     int fuel;
 
     int ns, ew;
+    //std::string name;
 
     // Default constructor
     WAYPOINT()
         : lat_d(0.0f), lat_m(0.0f), lat_s(0.0f), lon_d(0.0f), 
-        lon_m(0.0f), lon_s(0.0f), profile(0), distance(0.0f), fuel(0), ns(0), ew(0)
+        lon_m(0.0f), lon_s(0.0f), profile(0), distance(0.0f), fuel(0), ns(0), ew(0)/*, name("")*/
     {
 
     }
 
     // FUNCTION - pass in var which represents waypoint number FOR NOW. Helps with screen element IDs as well, for the hash.
+public:
     void drawEntry()
     {
         if (b_IsNewWaypoint) // This check mechanism allows us to only push back an element ONCE when creating a new waypoint, to avoid a race condition.
         {
             // create a spot in the vector, and initializes with zero for the input box.
-            WaypointEntry.emplace_back(lat_d, lat_m, lat_s, lon_d, lon_m, lon_s, profile, distance, fuel, ns, ew);
-            
+            WaypointEntry.emplace_back(lat_d, lat_m, lat_s, lon_d, lon_m, lon_s, profile, distance, fuel, ns, ew/*, name*/);
+
             b_IsNewWaypoint = false; // reset until value is made true again by button press to create waypoint
         }
 
-        DrawEntry_testMarker++; //used to test the loop incrementation. Output is on WalnutApp.cpp near the "+" button
+        if (b_debug)
+            DrawEntry_testMarker++; //used to test the loop incrementation. Output is on WalnutApp.cpp near the "+" button
 
-        ImGui::PushID(g_vectorPOS);
+        ImGui::PushID(g_vectorPOS); // this allows us to have separate screen elements in the loop that get a unique hash ID (the param gets mixed into the hash)
 
         ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 10.0f);
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10.0f, 8.0f));
-        ImGui::BeginChild("Navigation##", ImVec2(100, 100), true, ImGuiWindowFlags_NoScrollbar);
+        ImGui::BeginChild("Navigation##", ImVec2(65, 100), true, ImGuiWindowFlags_NoScrollbar);
 
-         
-        ImGui::Button("Insert Above", ImVec2(80.0f, 20.0f));
+         // Edit buttons:
+        if (ImGui::Button("^ INS ^##", ImVec2(45.0f, 20.0f)))
+        {
+            insertAbove(g_vectorPOS);
+        }
+
         ImGui::Dummy(ImVec2(0.0f, 4.0f));
-        ImGui::Button("DELETE", ImVec2(80.0f, 20.0f));
+
+        if (ImGui::Button("DEL##", ImVec2(45.0f, 20.0f)))
+        {
+            deleteCurrent(g_vectorPOS);
+        }
+            
         ImGui::Dummy(ImVec2(0.0f, 4.0f));
-        ImGui::Button("Insert Below", ImVec2(80.0f, 20.0f));
+        if(ImGui::Button("v INS v##", ImVec2(45.0f, 20.0f)))
+            insertBelow(g_vectorPOS);
 
         ImGui::EndChild(); ImGui::SameLine();
 
-        ImGui::BeginChild("Waypoints##", ImVec2(1000.0f, 100.0f), true, ImGuiWindowFlags_NoScrollbar);
+        ImGui::BeginChild("Waypoints##", ImVec2(1075.0f, 100.0f), true, ImGuiWindowFlags_NoScrollbar);
 
-      
-
-        // SIZE TEST to make sure vector is not growing due to loop:
-        // ImGui::Text("Entry size: %d", Entry.size());
         ImGui::PushItemWidth(scaledElementSize); // sets input box width until the POP below.
 
-            ImGui::Text("Waypoint : %d", g_vectorPOS);
+        ImGui::Text("Sequence Point: %d", g_vectorPOS); //ImGui::SameLine(); 
+        //ImGui::Text("Waypoint ID: "); ImGui::SameLine();
 
-            //This differentiates the ImGui data labels through each loop
-            // to avoid dupes because it is a HASH of PushID + DataLabel
-
+        //ImGui::PushItemWidth(120); // sets input box width until the POP below.
+        //    ImGui::InputTextWithHint("##nametag", "Add a tag", TextInput, IM_ARRAYSIZE(TextInput)/*, ImGuiInputTextCallback*/);
+        //ImGui::PopItemWidth();
 
                     //INPUT AND DISPLAY WPT LAT, including NORTH/SOUTH:
                     ImGui::Text("LAT   ");
@@ -170,7 +185,6 @@ public:
 
                 ImGui::SameLine(); ImGui::PopItemWidth(); ImGui::SameLine(); /// end width for combo button
 
-                //testMarker++; //used to test the loop incrementation. Output is on WalnutApp.cpp near the "+" button
 
                     // INPUT LATITUDE:
                     // NULL takes away the increment/decrement range creation button
@@ -182,9 +196,13 @@ public:
                     // COLUMN 2: on the second waypoint, add column two input and display: Flight profile
                     if (g_vectorPOS >= 1)
                     {
-                            ImGui::SameLine(); ImGui::Dummy(ImVec2(50.0f, 0.0f)); ImGui::SameLine();
+                        ImGui::SameLine(); ImGui::Dummy(ImVec2(50.0f, 0.0f)); ImGui::SameLine();
+                        ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor::HSV(0.25f, 0.7f, 0.7f, 0.3f));
+                        ImGui::InputFloat("##LegDist", &WaypointEntry.at(g_vectorPOS).DISTANCE, NULL, NULL, "%.0f"); ImGui::SameLine(); ImGui::Text("Leg Length (%s)", unitString); // <<<<<<<<
+                    //        ImGui::SameLine(); ImGui::Dummy(ImVec2(50.0f, 0.0f)); ImGui::SameLine();
 
-                            ImGui::InputInt("  Flight Profile", &WaypointEntry.at(g_vectorPOS).PROFILE, NULL, NULL);
+                    //        ImGui::InputInt("  Flight Profile", &WaypointEntry.at(g_vectorPOS).PROFILE, NULL, NULL);
+                        ImGui::PopStyleColor();
                     }
 
                     //INPUT AND DISPLAY WPT LONG, including EAST/WEST:
@@ -230,9 +248,8 @@ public:
                             if (units == KM)
                                 unitString = "KM";
 
-                            //WaypointEntry.at(m_vectorPOS).FUEL = (int)(CorrectedFuelRate * WaypointEntry.at(m_vectorPOS).DISTANCE);
-                            ImGui::InputFloat("##LegDist", &WaypointEntry.at(g_vectorPOS).DISTANCE, NULL, NULL, "%.0f"); ImGui::SameLine(); ImGui::Text("Leg Length (%s)", unitString); // <<<<<<<<
-                            ImGui::SameLine(); ImGui::Dummy(ImVec2(20.0f, 0.0f)); ImGui::SameLine();
+
+                            //ImGui::SameLine(); ImGui::Dummy(ImVec2(20.0f, 0.0f)); ImGui::SameLine();
                             ImGui::InputInt("Fuel Used (LBS)", &WaypointEntry.at(g_vectorPOS).FUEL, NULL, NULL);
 
                         ImGui::PopStyleColor();
@@ -245,17 +262,20 @@ public:
 
         ImGui::EndChild(); ImGui::SameLine();
 
-        ImGui::BeginChild("end##", ImVec2(100, 100), true, ImGuiWindowFlags_NoScrollbar);
+            ImGui::BeginChild("MoveWPT##", ImVec2(60, 100), true, ImGuiWindowFlags_NoScrollbar);
 
 
-        ImGui::Dummy(ImVec2(0.0f, 10.0f));
-        ImGui::Button("Move Up##", ImVec2(80.0f, 20.0f));
-        ImGui::Dummy(ImVec2(0.0f, 10.0f));
-        ImGui::Button("Move Down##", ImVec2(80.0f, 20.0f));
+                ImGui::Dummy(ImVec2(0.0f, 10.0f));
+                if(ImGui::Button("^ UP ^##", ImVec2(42.0f, 20.0f)))
+                    moveUp(g_vectorPOS);
+                ImGui::Dummy(ImVec2(0.0f, 10.0f));
+                if(ImGui::Button("v DN v##", ImVec2(42.0f, 20.0f)))
+                    moveDown(g_vectorPOS);
 
-        ImGui::EndChild(); 
 
-        ImGui::PopStyleVar();
+            ImGui::EndChild(); 
+
+            ImGui::PopStyleVar();
         ImGui::PopStyleVar();
 
 
@@ -275,22 +295,109 @@ public:
         ImGui::SameLine(); ImGui::Text("  Clamp1 - %d  ", ClampFloat1_testMarker); ImGui::SameLine(); ImGui::Text("  Clamp2 - %d  ", ClampFloat2_testMarker); ImGui::SameLine(); ImGui::Text("  Draw - %d  ", DrawEntry_testMarker); ImGui::SameLine();
 
         //Data:
-        ImGui::Text("  m_vectorPOS: %d", g_vectorPOS); ImGui::SameLine(); ImGui::Text("  WaypointEntry.size(): %d", WaypointEntry.size()); ImGui::SameLine(); ImGui::Text("  WaypointEntry.capacity(): %d", WaypointEntry.capacity()); ImGui::SameLine(); if(g_vectorPOS > 0)ImGui::Text(" 0 data point: %.5f", WaypointEntry.at(0).LAT_d);
+        ImGui::Text("  WPT counter: %d", WaypointCounter); ImGui::SameLine(); ImGui::Text("  g_vectorPOS: %d", g_vectorPOS); ImGui::SameLine(); ImGui::Text("  WaypointEntry.size(): %d", WaypointEntry.size()); ImGui::SameLine(); ImGui::Text("  WaypointEntry.capacity(): %d", WaypointEntry.capacity()); ImGui::SameLine(); if(g_vectorPOS > 0)ImGui::Text(" 0 data point: %.5f", WaypointEntry.at(0).LAT_d);
 
     }
 
     void DrawMain()
     {
-        for (g_vectorPOS = 0; g_vectorPOS < WaypointCounter; g_vectorPOS++)
+
+        
+        for (g_vectorPOS = 0; g_vectorPOS < WaypointCounter; g_vectorPOS++) // removing waypoint-counter-based draws
+        //auto pos = WaypointEntry.begin();
+        //for ( ; pos != WaypointEntry.end(); pos++)
         {
             // Note - ITEM is instantiated in EntryPoint.h before the while-loop.
+            
+            //g_vectorPOS++;
             drawEntry(); // Modular draw call, per the number of waypoints
         }
 
-        b_valueChanged = false;
+        b_valueChanged = false; // Draws stop here each time until new changes
 
     }
 
+    // Waypoint Editing:
+    void insertAbove(int position)
+    {
+        auto pos = WaypointEntry.begin();
+        WaypointEntry.insert(pos + (position), WPT());
+        WaypointCounter++;
+        b_valueChanged = true;
+    }
+
+    void deleteCurrent(int position)
+    {
+        auto pos = WaypointEntry.begin();
+
+        pos = pos + position;
+
+        if (pos == (WaypointEntry.end() - 1))
+        {
+            //auto it = WaypointEntry.end();
+            //WaypointCounter--;
+            //b_valueChanged = true;
+            b_requestPopBack = true;
+            //WaypointEntry.pop_back();
+
+        }
+
+        else
+        {
+            WaypointEntry.erase(pos /*+ position*/ );
+            WaypointCounter--;
+            b_valueChanged = true;
+        }
+            
+        }
+           
+
+        //else if(position != WaypointEntry.size())
+        //    {
+        //    WaypointCounter--;  // Keep track of waypoint items. Not the same as waypoint ID
+        //
+        //    WaypointEntry.erase(pos);
+        //    b_valueChanged = true;
+
+        //}
+
+        //else{}
+
+
+        //auto pos = WaypointEntry.begin();
+        //WaypointEntry.erase(pos);
+    //}
+
+    void insertBelow(int position)
+    {
+        auto pos = WaypointEntry.begin() + position;
+        WaypointEntry.insert((pos +  1), WPT());
+        WaypointCounter++;
+        b_valueChanged = true;
+    }
+
+    void moveUp(int position)
+    {
+        auto pos = WaypointEntry.begin() + position;
+        if (pos > WaypointEntry.begin())
+        {
+            std::swap(WaypointEntry[position], WaypointEntry[position - 1]);
+        }
+    }
+
+    void moveDown(int position)
+    {
+        auto pos = WaypointEntry.begin() + position;
+        auto end = WaypointEntry.end();
+        if (pos < end - 1)
+        {
+            std::swap(WaypointEntry[position], WaypointEntry[position + 1]);
+        }
+
+        
+    }
+
+    // Calculate totals:
     void totalFuelCalc()
     {
         totalFuelUsed = std::accumulate(WaypointEntry.begin(), WaypointEntry.end(), 0,
@@ -321,7 +428,8 @@ public:
 
             b_valueChanged = true;
 
-            ClampFloat2_testMarker++; // Counting the loops
+            if (b_debug)
+                ClampFloat2_testMarker++; // Counting the loops
         }
     }
 
@@ -381,6 +489,7 @@ public:
             lon2 = (WaypointEntry.at(g_vectorPOS).LON_d + (WaypointEntry.at(g_vectorPOS).LON_m / 60) + (WaypointEntry.at(g_vectorPOS).LON_s / 3600));
         }
 
+        if (b_debug)
             Haversine_testMarker++; // counting the loops
 
         // distance between latitudes and longitudes
@@ -402,7 +511,6 @@ public:
         return (0.5399568f) * rad * c; // Output is in NAUTICAL MILES (correction factor listed is from KM to NM).
     }
 
-    
     // Do this until popping out of the loop in DrawMain and shutting off b_valueChanged.
     void doCalculations( )
     {

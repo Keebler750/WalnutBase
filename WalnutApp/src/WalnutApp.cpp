@@ -18,58 +18,68 @@ public:
         bool show_ID_StackTool = false;
         bool lockWindow = true; // Enable the child window locking into main window - Go manually set the Begin flags !
 
-            // some options:
         if (show_demo_window)
+        {
             ImGui::ShowDemoWindow();
 
-        if (show_ID_StackTool)
-            ImGui::ShowStackToolWindow();
+        }
 
-            // Set by bool above, this is a layout item; also needs the WindowFlags re-enabled in "Begin"
-            // This section conforms the child to the main window dimensions.
-        if (lockWindow) 
+        if (show_ID_StackTool)
         {
+            ImGui::ShowStackToolWindow();
+        }
+
+        if (lockWindow)
+        {
+            // Set by bool above, this is a layout item; also needs the WindowFlags re-enabled in "Begin"
+            // This section conforms the child to the main window dimensions.            
             ImGuiViewport* viewport = ImGui::GetMainViewport();
             ImGui::SetNextWindowPos(viewport->WorkPos);     // These settings, instead of 'Pos' and 'Size'... 
             ImGui::SetNextWindowSize(viewport->WorkSize);   //avoid drawing over main menubar.
         }
 
-
+        if (b_allowIdling)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+        }
 
         // Create a window inside main window called "Application Window" and append into it.
         // un-comment the windowFlags when the "lockWindow = true" above.
+        ImGui::Begin("##MainAppWindowFuelCalc", NULL
+            , ImGuiWindowFlags_AlwaysHorizontalScrollbar |
+            ImGuiWindowFlags_AlwaysVerticalScrollbar |
+            //ImGuiWindowFlags_NoTitleBar |
+            //ImGuiWindowFlags_NoDocking |
+            ImGuiWindowFlags_MenuBar |
+            ImGuiWindowFlags_NoDecoration |
+            ImGuiWindowFlags_NoResize |
+            ImGuiWindowFlags_NoMove
+        );
 
-        ImGui::Begin("##MainAppWindowFuelCalc", NULL 
-                    ,ImGuiWindowFlags_AlwaysHorizontalScrollbar |
-                    ImGuiWindowFlags_AlwaysVerticalScrollbar |
-                    //ImGuiWindowFlags_NoTitleBar |
-                    //ImGuiWindowFlags_NoDocking |
-                    ImGuiWindowFlags_MenuBar |
-                    ImGuiWindowFlags_NoDecoration |
-                    ImGuiWindowFlags_NoResize |
-                    ImGuiWindowFlags_NoMove
-                    );
+
+        // if, in the last loop, we asked to delete the last sequence point, 
+        // then we wait till here to pop it off the vector to avoid errors. The waypoint counter NEEDS 
+        // to follow the actions to avoid a draw error in the table of values.
+        if (b_requestPopBack)   
+        {
+            WaypointEntry.pop_back();
+            WaypointCounter--;
+            b_requestPopBack = false;
+        }
+
 
         ImGui::Dummy(ImVec2(0.0f, 20.0f));  // height to top of page
-            
         ImGui::PushItemWidth(scaledElementSize);
-
         ImGui::SetWindowFontScale(fontSize);
-
-            if(b_allowIdling)
-            {
-                std::this_thread::sleep_for(std::chrono::milliseconds(delay));
-            }
-
         ImGui::Dummy(ImVec2(0.0f, 10.0f)); ImGui::Separator(); ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
             //This is not used anywhere yet other than radio buttons.
             enum AircraftType { None, F18, F15, A10 };    
             static int aircraft = F18; // Default set to F18 here... 
 
+            //////////////////////
             // FUEL variables: ///
             //////////////////////
-            //static float startFuel = 0; // Moved to header file...
             static bool b_internal = true;
             static bool b_left = false;
             static bool b_center = false;
@@ -78,11 +88,13 @@ public:
             const static float left = 2250.0f;
             const static float center = 2250.0f;
             const static float right = 2250.0f;
-                // added via checkbox logic; internal, left, center, right tanks, in that order.
+
+                // array - added via checkbox logic; internal, left, center, right tanks, in that order.
             static float presetFuel[4] = { 0.0f,0.0f,0.0f,0.0f };
                 // Sets the slider max based on drop tanks etc.
             static float maxFuel = 0.0f; 
-            static float BugCheckFuel;
+            //static float BugCheckFuel;
+            static bool b_fuelChanged = false;
 
                 // Choose aircraft:
             ImGui::Text("Aircraft Profile: ");
@@ -90,72 +102,69 @@ public:
             ImGui::RadioButton("F-15E", &aircraft, F15); ImGui::SameLine();
             ImGui::RadioButton("A-10CII", &aircraft, A10); ImGui::SameLine();
 
-                // FUEL SETTINGS: ////////////////////////////////////
-                // Set max fuel in slider according to drop tanks, etc.
-            maxFuel = presetFuel[0] + presetFuel[1] + presetFuel[2] + presetFuel[3];
-
-                // This avoids a bug problem with the fuel slider if the slider doesn't get interacted after checkboxes.
-            if (BugCheckFuel != maxFuel) startFuel = maxFuel;  
-            BugCheckFuel = maxFuel;
-
             ImGui::Dummy(ImVec2(20.0f, 0.0f)); ImGui::SameLine();
 
                 // Check boxes to configure the jet and set max fuel capacity
             ImGui::Text("Fuel Tank Configuration: "); ImGui::SameLine();
-            ImGui::Checkbox("Internal", &b_internal);
-            ImGui::SameLine();
-            ImGui::Checkbox("Left Ext.", &b_left);
-            ImGui::SameLine();
-            ImGui::Checkbox("Center Ext.", &b_center);
-            ImGui::SameLine();
-            ImGui::Checkbox("Right Ext.", &b_right);
-            ImGui::SameLine(); ImGui::Dummy(ImVec2(20.0f, 0.0f)); ImGui::SameLine();
+            if (ImGui::Checkbox("Internal", &b_internal)) b_fuelChanged = true; ImGui::SameLine();
 
-                        // Logic/Params for checkboxes above, for clean up purposes:
-                        {
-                            if (b_internal)
-                                presetFuel[0] = internal;
-                            else if (!b_internal)
-                                presetFuel[0] = 0;
+            if (ImGui::Checkbox("Left Ext.", &b_left)) b_fuelChanged = true; ImGui::SameLine();
 
-                            if (b_left)
-                                presetFuel[1] = left;
-                            else if (!b_left)
-                                presetFuel[1] = 0;
+            if (ImGui::Checkbox("Center Ext.", &b_center)) b_fuelChanged = true; ImGui::SameLine();
 
-                            if (b_center)
-                                presetFuel[2] = center;
-                            else if (!b_center)
-                                presetFuel[2] = 0;
+            if (ImGui::Checkbox("Right Ext.", &b_right)) b_fuelChanged = true; ImGui::SameLine(); ImGui::Dummy(ImVec2(20.0f, 0.0f)); ImGui::SameLine();
 
-                            if (b_right)
-                                presetFuel[3] = right;
-                            else if (!b_right)
-                                presetFuel[3] = 0;
-                        }
+                // Logic/Params for checkboxes, sets fuel slider
+                {
+                    b_internal ?  presetFuel[0] = internal : presetFuel[0] = 0;
+
+                    b_left ? presetFuel[1] = left : presetFuel[1] = 0;
+
+                    b_center ? presetFuel[2] = center : presetFuel[2] = 0;
+
+                    b_right ? presetFuel[3] = right : presetFuel[3] = 0;
+
+                    maxFuel = presetFuel[0] + presetFuel[1] + presetFuel[2] + presetFuel[3];
+                }
+
+                // This avoids a bug problem with the fuel slider if the slider doesn't get interacted after checkboxes set.
+                if (b_fuelChanged)
+                {
+                    startFuel = maxFuel;
+                    b_fuelChanged = false;
+                }
 
                 // Fuel state, modified by checkboxes for configuration
-            ImGui::Text("Starting Fuel State (LBS)"); ImGui::SameLine();
-            ImGui::SliderFloat("##", &startFuel, 0, maxFuel, "%.0f"); ImGui::SameLine();
+            ImGui::Text("Starting Fuel (LBS)"); ImGui::SameLine(); ImGui::SliderFloat("##", &startFuel, 0, maxFuel, "%.0f"); ImGui::SameLine();
 
-                // display the fuel percentage with format and bug handling
-                // various spaces are added to try to stop the screen 
-                // elements jumping around with 1 - 3 digit widths.
+
             static float fuelPercent = 0.0f;
 
             fuelPercent = ((startFuel / maxFuel) * 100);
 
-            // Handle div 0 case
+                // display the fuel percentage with format and bug handling
+                // various spaces are added to try to stop the screen 
+                // elements jumping around with 1 - 3 digit widths.
+
+                // Handle div 0 case
             if (maxFuel == 0)
             {
-                ImGui::Text("(     0 %%)"); ImGui::SameLine(); 
+                ImGui::Text("(   0 %%)"); ImGui::SameLine(); 
             }
+
             else
-            {
+            {       // Formatting due to width of digits: (added spaces)
                 if (fuelPercent == 100.0f)
                 {
                     ImGui::Text("(%.0f %%)", fuelPercent); ImGui::SameLine();
                 }
+
+                else if (fuelPercent >= 0.0f && fuelPercent < 10.0f)
+                {
+                    ImGui::Text("(    %.0f %%)", fuelPercent); ImGui::SameLine();
+
+                }
+
                 else
                 {
                     ImGui::Text("(  %.0f %%)", fuelPercent); ImGui::SameLine();
@@ -163,6 +172,7 @@ public:
             }
 
             ImGui::Dummy(ImVec2(20.0f, 0.0f)); ImGui::SameLine();
+
             if (ImGui::InputFloat("Fuel Flow, LBS/nm", &fuelFlow, NULL, NULL, "%.0f"))
                 b_valueChanged = true;
 
@@ -171,7 +181,8 @@ public:
                 item.drawDebugInfo();
             }
             
-            WhileLoop_testMarker++;
+            if (b_debug)
+                WhileLoop_testMarker++;
 
         ImGui::Dummy(ImVec2(0.0f, 10.0f)); ImGui::Separator(); ImGui::Dummy(ImVec2(0.0f, 10.0f));
             // MIDDLE: DRAW WAYPOINT ELEMENTS
@@ -210,10 +221,12 @@ public:
             // EXPERIMENTAL ' DEL ' BUTTON CLICK DELETE SPECIFIC WAYPOINT ENTRY and adds to DrawEntry loop:
             if (ImGui::Button(" DEL ") && (WaypointCounter < 100)) // button click size over-run guard!
             {
-                WaypointCounter--;  // Keep track of waypoint items. Not the same as waypoint ID
-                auto pos = WaypointEntry.begin();
-                WaypointEntry.erase(pos + 1 );
-                b_valueChanged = true;
+                //WaypointCounter--;  // Keep track of waypoint items. Not the same as waypoint ID
+                //auto pos = WaypointEntry.begin();
+                //WaypointEntry.erase(pos);
+                //b_valueChanged = true;
+
+                item.deleteCurrent(2);
 
             }ImGui::SameLine();
 

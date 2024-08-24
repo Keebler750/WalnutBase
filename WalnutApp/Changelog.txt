@@ -72,16 +72,40 @@ Aug 4, 2024
 - ADD 'name' feature to waypoints to decouple from strict sequential waypoint numbering (especially useful if we re-order waypoints!)
 - moved fuel calcs also into the calc function and re-named it to doCalculations() NOTE: There is a re-calc bug.
 - created a debug method in WAYPOINT
-- refactored to a global vectorPOS and stopped passing around multiple copies: "position," "m_vectorPOS," "VectorPosition" etc in all the methods and calcs.
+- refactored to a global vectorPOS and stopped passing around multiple copies: "position," "m_vectorPOS," "VectorPosition" etc in 
+all the methods and calcs.
 
 
 feature-2
 Aug 5, 2024
-- created new method DrawMain() to move the draw loop into the WAYPOINT class. Then shutting down the b_valueChanged bool INSIDE the method but OUTSIDE the for loop
-	means it will cycle through ALL calcs/waypoints before stopping. This avoids the missing recalcs. 
+- created new method DrawMain() to move the draw loop into the WAYPOINT class. Then shutting down the b_valueChanged bool INSIDE the 
+method but OUTSIDE the for loop	means it will cycle through ALL calcs/waypoints before stopping. This avoids the missing recalcs. 
 	(it only cycled through the recalcs ONCE instead of 'recalcs * NumWaypoints')
 
 
 feature-2
 Aug 6, 2024
 - Add child windows with borders, rounded corner format, and some dummy buttons to start as placeholders for WPT edits
+
+
+feature-2
+Aug 13, 2024
+- cleaned up the fuel params so there's no 'BugCheck' anymore. Did it properly.
+- started adding Waypoint names, but need to deal with strings properly.
+- more clean up and formatting code for readability and flow.
+
+
+feature-2
+unknown August 2024
+- started connecting waypoint move/delete buttons to functions
+
+
+feature-2 
+August 22, 2024
+- added imgui.h file to mathfunctions.h to avoid the Intellisense errors
+
+
+feature-2
+August 23, 2024
+- moved the pop_back() call outside the draw loop and squashed that bug. Since I had been called pop_back 
+before the loop was finished drawing all of the (the last) waypoints, I ended up with bad data and a crash.
