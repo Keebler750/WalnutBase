@@ -22,6 +22,8 @@ PRIORITY:
 
 TO DO:
 
+- ImGui::BeginCombo() for North, South, East and West!!
+
 - Understand app structure: Element Value Editing vs Vector Structure Modification vs GUI display/input actions. The vector 
 structure is a separate thing from what you see - those are EDITS! pop_back bug caused because vector structure being edited while screen is 
 trying access data at a moved location in memory. (and iterators not valid?)
@@ -29,7 +31,7 @@ trying access data at a moved location in memory. (and iterators not valid?)
 - Loop throught vector.begin() and vector.end() instead of incrementing waypointCounter++
 
 - if I want to save a Name string, look at the char[] vs std::string issue and possible callback resize issue. Also
-look at GP Calc to figure out how I stored strings in vectors.
+look at GP Calc to figure out how I stored strings in vectors.***[ PROBLEM IS CHARS CAN'T BE STORED IN VECTOR ... not copyable/assignable ]***
 
 - Add pre-planned waypoints, both for debugging ease, and as future feature for maps features - airbases, etc.
 

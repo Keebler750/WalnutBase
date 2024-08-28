@@ -109,3 +109,15 @@ feature-2
 August 23, 2024
 - moved the pop_back() call outside the draw loop and squashed that bug. Since I had been called pop_back 
 before the loop was finished drawing all of the (the last) waypoints, I ended up with bad data and a crash.
+
+
+feature-2
+August 24, 2024
+- got delete, insert and move feature working
+
+
+feature-2
+August 27, 2024
+- got std::string working in the InputText with the prodding of ChatGPT, who did not give me the answer, but who made me think 
+enough to get it working. I still don't understand it.
+- added two new files from the ImGui library to handle the resize callback .... Imgui_stdlib.h and ImplStrings.cpp (my naming...)

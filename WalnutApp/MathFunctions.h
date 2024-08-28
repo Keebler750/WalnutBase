@@ -9,6 +9,7 @@
 #include <string>
 #include <thread> // std::this_thread, std::chrono::milliseconds
 #include <imgui.h>
+#include "imgui_stdlib.h"
 
 // This is used as the position index inside the vector of waypoint data.
 static int g_vectorPOS;
@@ -60,7 +61,8 @@ static int WaypointCounter = 0;
 static bool b_valueChanged = false;
 static bool b_requestPopBack = false;   // If we are requesting a last-waypoint deletion, we can't do it in the draw-table.
 
-static char TextInput [11] = "";
+//static char TextInput [11] = "";
+//static std::string stringInput = "";
 
 // STRUCT data type combining all of the waypoint floats.
 struct WPT
@@ -72,18 +74,18 @@ struct WPT
     float DISTANCE;
     int FUEL;
     int NS, EW;
-    //std::string NAME;
+    std::string NAME;
 
     // Default Constructor with initialization
     WPT()
-        :LAT_d(0.0f), LAT_m(0.0f), LAT_s(0.0f), LON_d(0.0f), LON_m(0.0f), LON_s(0.0f), PROFILE(0), DISTANCE(0.0f), FUEL(0), NS(0), EW(0)//, NAME("")
+        :LAT_d(0.0f), LAT_m(0.0f), LAT_s(0.0f), LON_d(0.0f), LON_m(0.0f), LON_s(0.0f), PROFILE(0), DISTANCE(0.0f), FUEL(0), NS(0), EW(0), NAME("")
     {
 
     }
 
     // Constructor, initialized by parameters passed in.
-    WPT(float a, float b, float c, float d, float e, float f, int g, float h, int i, int j, int k /*, std::string l*/)
-        :LAT_d(a), LAT_m(b), LAT_s(c), LON_d(d), LON_m(e), LON_s(f), PROFILE(g), DISTANCE(h), FUEL(i), NS(j), EW(k)//, NAME(l)
+    WPT(float a, float b, float c, float d, float e, float f, int g, float h, int i, int j, int k , std::string l)
+        :LAT_d(a), LAT_m(b), LAT_s(c), LON_d(d), LON_m(e), LON_s(f), PROFILE(g), DISTANCE(h), FUEL(i), NS(j), EW(k), NAME(l)
     {
 
     }
@@ -109,12 +111,12 @@ public:
     int fuel;
 
     int ns, ew;
-    //std::string name;
+    std::string name;
 
     // Default constructor
     WAYPOINT()
         : lat_d(0.0f), lat_m(0.0f), lat_s(0.0f), lon_d(0.0f), 
-        lon_m(0.0f), lon_s(0.0f), profile(0), distance(0.0f), fuel(0), ns(0), ew(0)/*, name("")*/
+        lon_m(0.0f), lon_s(0.0f), profile(0), distance(0.0f), fuel(0), ns(0), ew(0), name("")
     {
 
     }
@@ -126,7 +128,7 @@ public:
         if (b_IsNewWaypoint) // This check mechanism allows us to only push back an element ONCE when creating a new waypoint, to avoid a race condition.
         {
             // create a spot in the vector, and initializes with zero for the input box.
-            WaypointEntry.emplace_back(lat_d, lat_m, lat_s, lon_d, lon_m, lon_s, profile, distance, fuel, ns, ew/*, name*/);
+            WaypointEntry.emplace_back(lat_d, lat_m, lat_s, lon_d, lon_m, lon_s, profile, distance, fuel, ns, ew, name);
 
             b_IsNewWaypoint = false; // reset until value is made true again by button press to create waypoint
         }
@@ -163,12 +165,15 @@ public:
 
         ImGui::PushItemWidth(scaledElementSize); // sets input box width until the POP below.
 
-        ImGui::Text("Sequence Point: %d", g_vectorPOS); //ImGui::SameLine(); 
-        //ImGui::Text("Waypoint ID: "); ImGui::SameLine();
+        ImGui::Text("Sequence Point: %d", g_vectorPOS); ImGui::SameLine(); 
+        ImGui::Text("Waypoint ID: "); ImGui::SameLine();
 
-        //ImGui::PushItemWidth(120); // sets input box width until the POP below.
-        //    ImGui::InputTextWithHint("##nametag", "Add a tag", TextInput, IM_ARRAYSIZE(TextInput)/*, ImGuiInputTextCallback*/);
-        //ImGui::PopItemWidth();
+        ImGui::PushItemWidth(120); // sets input box width until the POP below.
+
+        // OVERLOAD of InputTextWithHint to allow use of std::string in the input, and then storage in our vector (since char arrays don't store in vectors!)
+        // Added ImGui functionality as a resize callback in ImplStrings.cpp and it's header files.
+        ImGui::InputTextWithHint("##nametag", "Add a tag", &WaypointEntry.at(g_vectorPOS).NAME, ImGuiInputTextFlags_CallbackResize, ImGuiInputTextCallback(), &WaypointEntry.at(g_vectorPOS).NAME);
+        ImGui::PopItemWidth();
 
                     //INPUT AND DISPLAY WPT LAT, including NORTH/SOUTH:
                     ImGui::Text("LAT   ");
