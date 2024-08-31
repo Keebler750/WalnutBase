@@ -172,7 +172,7 @@ public:
 
         // OVERLOAD of InputTextWithHint to allow use of std::string in the input, and then storage in our vector (since char arrays don't store in vectors!)
         // Added ImGui functionality as a resize callback in ImplStrings.cpp and it's header files.
-        ImGui::InputTextWithHint("##nametag", "Add a tag", &WaypointEntry.at(g_vectorPOS).NAME, ImGuiInputTextFlags_CallbackResize, ImGuiInputTextCallback(), &WaypointEntry.at(g_vectorPOS).NAME);
+        ImGui::InputTextWithHint("##nametag", "Add a tag", &WaypointEntry.at(g_vectorPOS).NAME/*, NULL ImGuiInputTextFlags_CallbackResize, NULL/*ImGuiInputTextCallback(), NULL &WaypointEntry.at(g_vectorPOS).NAME*/);
         ImGui::PopItemWidth();
 
                     //INPUT AND DISPLAY WPT LAT, including NORTH/SOUTH:
