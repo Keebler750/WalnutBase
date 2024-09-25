@@ -61,7 +61,7 @@ bool ImGui::InputTextMultiline(const char* label, std::string* str, const ImVec2
 
 bool ImGui::InputTextWithHint(const char* label, const char* hint, std::string* str, ImGuiInputTextFlags flags, ImGuiInputTextCallback callback, void* user_data)
 {
-    //IM_ASSERT((flags & ImGuiInputTextFlags_CallbackResize) == 0);
+    IM_ASSERT((flags & ImGuiInputTextFlags_CallbackResize) == 0);
     flags |= ImGuiInputTextFlags_CallbackResize;
 
     InputTextCallback_UserData cb_user_data;

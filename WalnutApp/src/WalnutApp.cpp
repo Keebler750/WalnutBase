@@ -38,24 +38,24 @@ public:
             ImGui::SetNextWindowSize(viewport->WorkSize);   //avoid drawing over main menubar.
         }
 
-        if (b_allowIdling)
-        {
-            std::this_thread::sleep_for(std::chrono::milliseconds(delay));
-        }
-
         // Create a window inside main window called "Application Window" and append into it.
         // un-comment the windowFlags when the "lockWindow = true" above.
         ImGui::Begin("##MainAppWindowFuelCalc", NULL
             , ImGuiWindowFlags_AlwaysHorizontalScrollbar |
             ImGuiWindowFlags_AlwaysVerticalScrollbar |
-            //ImGuiWindowFlags_NoTitleBar |
-            //ImGuiWindowFlags_NoDocking |
+            ImGuiWindowFlags_NoTitleBar |
+            ImGuiWindowFlags_NoDocking |
             ImGuiWindowFlags_MenuBar |
             ImGuiWindowFlags_NoDecoration |
             ImGuiWindowFlags_NoResize |
             ImGuiWindowFlags_NoMove
         );
 
+        // Slow down the loop
+        if (b_allowIdling)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+        }
 
         // if, in the last loop, we asked to delete the last sequence point, 
         // then we wait till here to pop it off the vector to avoid errors. The waypoint counter NEEDS 
@@ -67,11 +67,55 @@ public:
             b_requestPopBack = false;
         }
 
+        // Menu item to load some default data. Useful for display or debugging.
+        if (b_loadData)
+        {
+            //WaypointEntry.clear();
+            WaypointEntry.emplace_back(45, 32, 0, 39, 27, 0, 0, 0, 0, 0, 0, "Home Airfield");
+            WaypointEntry.emplace_back(47, 21, 0, 36, 49, 0, 0, 0, 0, 0, 0, "Join up");
+            WaypointEntry.emplace_back(42, 41, 0, 32, 18, 0, 0, 0, 0, 0, 0, "Orbit Target");
+            b_loadData = false;
+        }
 
-        ImGui::Dummy(ImVec2(0.0f, 20.0f));  // height to top of page
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Combo Boxes are also called "Dropdown" in other systems
+        // Expose flags as checkbox for the demo
+        static ImGuiComboFlags flags = 0;
+
+        // Using the generic BeginCombo() API, you have full control over how to display the combo contents.
+        // (your selection data could be an index, a pointer to the object, an id for the object, a flag intrusively
+        // stored in the object itself, etc.)
+        const char* items[] = { "1000ft", "5000ft", "10,000ft", "15,000ft", "20,000ft", "25,000ft", "30,000ft", "35,000ft", "40,000ft", "45,000ft" };
+        static int item_current_idx = 0; // Here we store our selection data as an index.
+
+        // Pass in the preview value visible before opening the combo (it could technically be different contents or not pulled from items[])
+        const char* combo_preview_value = items[item_current_idx];
+
+        ImGui::PushItemWidth(60);
+
+        if (ImGui::BeginCombo(" Altitude##test", combo_preview_value, ImGuiComboFlags_HeightLargest | ImGuiComboFlags_NoArrowButton))
+        {
+            for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+            {
+                const bool is_selected = (item_current_idx == n);
+                if (ImGui::Selectable(items[n], is_selected))
+                    item_current_idx = n;
+
+                // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                if (is_selected)
+                    ImGui::SetItemDefaultFocus();
+            }ImGui::EndCombo();
+
+        }ImGui::PopItemWidth();
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#pragma region
+        ImGui::Dummy(ImVec2(0.0f, 5.0f));  // height to top of page
         ImGui::PushItemWidth(scaledElementSize);
         ImGui::SetWindowFontScale(fontSize);
-        ImGui::Dummy(ImVec2(0.0f, 10.0f)); ImGui::Separator(); ImGui::Dummy(ImVec2(0.0f, 10.0f));
+        //ImGui::Dummy(ImVec2(0.0f, 5.0f)); ImGui::Separator(); ImGui::Dummy(ImVec2(0.0f, 10.0f));
+
+#pragma endregion --------- formatting ---
 
             //This is not used anywhere yet other than radio buttons.
             enum AircraftType { None, F18, F15, A10 };    
@@ -93,18 +137,22 @@ public:
             static float presetFuel[4] = { 0.0f,0.0f,0.0f,0.0f };
                 // Sets the slider max based on drop tanks etc.
             static float maxFuel = 0.0f; 
-            //static float BugCheckFuel;
+                // Check to reset the fuel slider due to interaction requirement. Just selecting drop tanks is not enough.
             static bool b_fuelChanged = false;
 
-                // Choose aircraft:
+            ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 10.0f);
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10.0f, 10.0f));
+
+            ImGui::BeginChild("Options##", ImVec2(1210, 60), true, ImGuiWindowFlags_NoScrollbar);
+            ImGui::PushItemWidth(60);
+
+            // Choose aircraft:
             ImGui::Text("Aircraft Profile: ");
             ImGui::RadioButton("F-18C", &aircraft, F18); ImGui::SameLine();
             ImGui::RadioButton("F-15E", &aircraft, F15); ImGui::SameLine();
-            ImGui::RadioButton("A-10CII", &aircraft, A10); ImGui::SameLine();
+            ImGui::RadioButton("A-10CII", &aircraft, A10); ImGui::SameLine(); ImGui::Dummy(ImVec2(20.0f, 0.0f)); ImGui::SameLine();
 
-            ImGui::Dummy(ImVec2(20.0f, 0.0f)); ImGui::SameLine();
-
-                // Check boxes to configure the jet and set max fuel capacity
+            // Check boxes to configure the jet and set max fuel capacity
             ImGui::Text("Fuel Tank Configuration: "); ImGui::SameLine();
             if (ImGui::Checkbox("Internal", &b_internal)) b_fuelChanged = true; ImGui::SameLine();
 
@@ -169,12 +217,16 @@ public:
                 {
                     ImGui::Text("(  %.0f %%)", fuelPercent); ImGui::SameLine();
                 }
-            }
-
-            ImGui::Dummy(ImVec2(20.0f, 0.0f)); ImGui::SameLine();
+            } ImGui::Dummy(ImVec2(20.0f, 0.0f)); ImGui::SameLine();
 
             if (ImGui::InputFloat("Fuel Flow, LBS/nm", &fuelFlow, NULL, NULL, "%.0f"))
                 b_valueChanged = true;
+
+
+            ImGui::PopItemWidth();
+            ImGui::EndChild();
+            ImGui::PopStyleVar();
+            ImGui::PopStyleVar();
 
             if (b_debug)
             {
@@ -184,78 +236,74 @@ public:
             if (b_debug)
                 WhileLoop_testMarker++;
 
-        ImGui::Dummy(ImVec2(0.0f, 10.0f)); ImGui::Separator(); ImGui::Dummy(ImVec2(0.0f, 10.0f));
-            // MIDDLE: DRAW WAYPOINT ELEMENTS
+#pragma region
 
-            // Make the button inside the push tags an obvious color
+        //ImGui::Dummy(ImVec2(0.0f, 10.0f)); ImGui::Separator(); ImGui::Dummy(ImVec2(0.0f, 10.0f));
+
+        // Make the button inside the push tags an obvious color
         ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0.25f, 0.7f, 0.4f));
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0.25f, 0.8f, 0.8f));
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.25f, 1.0f, 1.0f));
 
+#pragma endregion --------- formatting ---
+        ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 10.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10.0f, 10.0f));
 
+        ImGui::BeginChild("Buttons##", ImVec2(1210, 40), true, ImGuiWindowFlags_NoScrollbar);
+
+            // MIDDLE: DRAW WAYPOINT ELEMENTS
             // EACH ' + ' BUTTON CLICK CREATES NEW WAYPOINT ENTRY and adds to DrawEntry loop:
+            ImGui::Dummy(ImVec2(68.0f, 00.0f)); ImGui::SameLine();
             if (ImGui::Button(" + ") && (WaypointCounter < 100)) // button click size over-run guard!
             {
+                WaypointEntry.emplace_back();
                 WaypointCounter++; // Keep track of new waypoint items. Not the same as waypoint ID
-                
-                b_IsNewWaypoint = true; // Only Emplace_back on button click for new waypoint
 
                 b_valueChanged = true;
-            }ImGui::SameLine();
+            }ImGui::SameLine(); 
 
-            ImGui::Text(" Add Waypoint (%d total, MAX = 100)", WaypointCounter); ImGui::SameLine(); ImGui::Dummy(ImVec2(20.0f, 00.0f)); ImGui::SameLine();
+            ImGui::Text(" Add Waypoint (%d total, MAX = 100)", WaypointCounter); ImGui::SameLine(); ImGui::Dummy(ImVec2(640.0f, 00.0f)); ImGui::SameLine();
+            if (ImGui::Button("LOAD DEMO DATA"))
+                b_loadData = true; ImGui::SameLine(); ImGui::Dummy(ImVec2(5.0f, 00.0f)); ImGui::SameLine();
+            if (ImGui::Button("CLEAR ALL"))
+                WaypointEntry.clear();
 
-            // EXPERIMENTAL ' - ' BUTTON CLICK DELETE SPECIFIC WAYPOINT ENTRY and adds to DrawEntry loop:
-            if (ImGui::Button(" - ") && (WaypointCounter < 100)) // button click size over-run guard!
-            {
-                WaypointCounter--;  // Keep track of waypoint items. Not the same as waypoint ID
+        ImGui::EndChild();
+        ImGui::PopStyleVar();
+        ImGui::PopStyleVar();
 
-                WaypointEntry.pop_back();
+#pragma region
 
-                b_valueChanged = true;
+            ImGui::SameLine(); ImGui::Dummy(ImVec2(20.0f, 00.0f)); ImGui::SameLine(); ImGui::Dummy(ImVec2(0.0f,30.0f)); ImGui::PopStyleColor(3);// Gives height clearance for the buttons.
 
-            }ImGui::SameLine();
-
-            ImGui::Text(" Pop_Back Last Waypoint (%d total, MAX = 100)", WaypointCounter); ImGui::SameLine();ImGui::Dummy(ImVec2(20.0f, 00.0f)); ImGui::SameLine();
-
-            // EXPERIMENTAL ' DEL ' BUTTON CLICK DELETE SPECIFIC WAYPOINT ENTRY and adds to DrawEntry loop:
-            if (ImGui::Button(" DEL ") && (WaypointCounter < 100)) // button click size over-run guard!
-            {
-                //WaypointCounter--;  // Keep track of waypoint items. Not the same as waypoint ID
-                //auto pos = WaypointEntry.begin();
-                //WaypointEntry.erase(pos);
-                //b_valueChanged = true;
-
-                item.deleteCurrent(2);
-
-            }ImGui::SameLine();
-
-            ImGui::Text(" Erase specific Waypoint (%d total, MAX = 100)", WaypointCounter); ImGui::SameLine();
-
-            ImGui::Dummy(ImVec2(0.0f,10.0f)); // Gives height clearance for the buttons.
-
-        ImGui::PopStyleColor(3);
+#pragma endregion --------- formatting ---
 
             // MAIN DRAW HERE:
-            item.DrawMain();    // all draw and calc done in MathFunctions.h file....loop contents from here have been moved.
-        
-            //ImGui::Dummy(ImVec2(0.0f, 10.0f)); ImGui::SameLine();
+            ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 10.0f);
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10.0f, 8.0f));
+
+            ImGui::BeginChild("##WaypointChildren", ImVec2(1210, 325), true);
+            ImGui::SetWindowFontScale(0.70f);
+                item.DrawMain();    // all draw and calc done in MathFunctions.h file....loop contents from here have been moved.
+
+            ImGui::EndChild();
+
+            ImGui::PopStyleVar(); ImGui::PopStyleVar();
 
             // FOOTER: (TOTALS at bottom of main page)
-            if (g_vectorPOS >= 2)
-            {
-                item.totalFuelCalc();
-                item.totalDistanceCalc();
-                item.fuelRemainingCalc();
+            if (g_vectorPOS > 1)
+            { 
+                item.doTotals();    // Do totals calc to supply page footer with info:
 
+#pragma region
 
-            ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor::HSV(0.25f, 0.7f, 0.7f, 0.3f));
+            ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor::HSV(0.25f, 0.7f, 0.7f, 0.3f));ImGui::Dummy(ImVec2(0.0f, 50.0f));ImGui::Dummy(ImVec2(40.0f, 0.0f)); ImGui::SameLine();
 
-             ImGui::Dummy(ImVec2(0.0f, 50.0f));
+#pragma endregion --------- formatting ---
 
-             ImGui::Dummy(ImVec2(40.0f, 0.0f)); ImGui::SameLine(); ImGui::InputInt("Total Fuel Used (LBS)", &totalFuelUsed, NULL, NULL);  ImGui::SameLine(); ImGui::Dummy(ImVec2(20.0f, 0.0f)); ImGui::SameLine();
-             ImGui::InputFloat("Total Distance", &totalDistance, NULL, NULL, "%.0f"); ImGui::SameLine(); ImGui::Text("%s", unitString); ImGui::SameLine(); ImGui::Dummy(ImVec2(20.0f, 0.0f)); ImGui::SameLine();
-                ImGui::InputInt("Fuel Remaining (LBS)", &fuelRemaining, NULL, NULL);
+            ImGui::InputInt("Total Fuel Used (LBS)", &totalFuelUsed, NULL, NULL);  ImGui::SameLine(); ImGui::Dummy(ImVec2(20.0f, 0.0f)); ImGui::SameLine();
+            ImGui::InputFloat("Total Distance", &totalDistance, NULL, NULL, "%.0f"); ImGui::SameLine(); ImGui::Text("%s", unitString); ImGui::SameLine(); ImGui::Dummy(ImVec2(20.0f, 0.0f)); ImGui::SameLine();
+            ImGui::InputInt("Fuel Remaining (LBS)", &fuelRemaining, NULL, NULL);
 
             ImGui::PopStyleColor();
             }
@@ -295,6 +343,10 @@ Walnut::Application* Walnut::CreateApplication(int argc, char** argv)
             {
                 (ImGui::MenuItem("Show Debug", "", &b_debug));
                 (ImGui::MenuItem("Allow Idling", "", &b_allowIdling));
+                if((ImGui::MenuItem("Clear All Data", "", nullptr)))
+                    WaypointEntry.clear();
+                (ImGui::MenuItem("Load Default", "", &b_loadData));
+
 
                 if (ImGui::BeginMenu("Set Units"))
                 {
@@ -351,14 +403,3 @@ Walnut::Application* Walnut::CreateApplication(int argc, char** argv)
 
     return app;
 }
-
-// Mouse checks from demo code:
-
-/*ImGuiIO& io = ImGui::GetIO();
-
-if (ImGui::IsMousePosValid())
-ImGui::Text("Mouse pos: (%g, %g)", io.MousePos.x, io.MousePos.y);
-else
-ImGui::Text("Mouse pos: <INVALID>");
-ImGui::SameLine();
-ImGui::Text("Mouse delta: (%g, %g)", io.MouseDelta.x, io.MouseDelta.y)*/;

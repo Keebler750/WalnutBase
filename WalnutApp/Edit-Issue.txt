@@ -1,6 +1,6 @@
 TODO:
 
-- Add "Insert, Delete, MoveUp, MoveDown" Waypoint editing buttons
+- DONE - Add "Insert, Delete, MoveUp, MoveDown" Waypoint editing buttons
 
 - would iterator implementation help?
 
@@ -12,12 +12,13 @@ BUGS:
 
 Notes:
 - what will be needed in the design to track how the waypoints move around in the vector?
+ANSWER: Just redraw the entire vector contents and do calcs on them as needed.
 
 - What happens to the calculations if waypoints are moved?
 
 - FUTURE: What happens to saved data and moves or edits?
 
-- TOOLS: Vector insert, erase, swap
+- TOOLS: Vector insert, erase, swap, clear
 
 - The waypoint data represents the current structure, but the unedited location is AT THE END of the vector, until 
 	we tell it otherwise. This is why ADD puts new data at the end. 
@@ -25,8 +26,8 @@ Notes:
 - Editing the contents of the waypoint data in the InputFloat works because we are targeting with .at( ) .... 
 
 CONSIDERATIONS:
-- bounds checking 
+- bounds checking - Use .end() and .size()
 
 - errors from mixed data, or un-recalculated data
 
-- if we are making the data mobile within the vector, we need a data ID OTHER than the vectorPOS
+- DONE - if we are making the data mobile within the vector, we need a data ID OTHER than the vectorPOS

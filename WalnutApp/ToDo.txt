@@ -11,8 +11,6 @@ CURRENT SESSION:
 
 PRIORITY:
 
-- Waypoints need to be name-able with a string so when we move them in the sequence we can still ID them
-
 - BUG - g_vectorPOS isn't actually tracking the element number....needs to be related to any iterator OR at least understand the math!!!!!!
 
 - Take all calculations out of the render loop.
@@ -22,16 +20,18 @@ PRIORITY:
 
 TO DO:
 
+- Need a proper architecture that builds and calculates the data in the vector regardless of scenarios, since right now it is hacked together to
+read the structure and do the calcs. I'd like to see a more controlled, robust and responsive data block that doesn't waste cycles but still responds to change.
+
 - ImGui::BeginCombo() for North, South, East and West!!
+
+- implementation of Tables to layout data and screen elements
 
 - Understand app structure: Element Value Editing vs Vector Structure Modification vs GUI display/input actions. The vector 
 structure is a separate thing from what you see - those are EDITS! pop_back bug caused because vector structure being edited while screen is 
 trying access data at a moved location in memory. (and iterators not valid?)
 
 - Loop throught vector.begin() and vector.end() instead of incrementing waypointCounter++
-
-- if I want to save a Name string, look at the char[] vs std::string issue and possible callback resize issue. Also
-look at GP Calc to figure out how I stored strings in vectors.***[ PROBLEM IS CHARS CAN'T BE STORED IN VECTOR ... not copyable/assignable ]***
 
 - Add pre-planned waypoints, both for debugging ease, and as future feature for maps features - airbases, etc.
 
@@ -42,7 +42,8 @@ look at GP Calc to figure out how I stored strings in vectors.***[ PROBLEM IS CH
 - WalnutApp.cpp needs a serious re-write.....stuff is everywhere
 
 - WIP - Immprove -- North(1), South(-1), East(1), West(-1) so that "-1" affects the haversine output properly.
-	This is overly complex due to the inability to attribute specific values to "ImGui::Combo" drop down. Can this be re-written?
+	This is overly complex due to the inability to attribute specific values to "ImGui::Combo" drop down. 
+	Can this be re-written? YES: use BeginCombo()
 
 - WIP - Look at type-conversion issues with int, float and/or double throughout the code
 
@@ -51,8 +52,6 @@ look at GP Calc to figure out how I stored strings in vectors.***[ PROBLEM IS CH
 - How to deal with limit cases for 'antipodes?'
 
 - Can ImGui be updated to the latest version without breaking Walnut? (NOTE: not without a serious hassle. Tried to add the ImGui remote repo and it didn't end well.)
-
-- Add 'Insert' and 'Delete' 'Move Up, Move Down' waypoint options
 
 - Scratchpad for copy/pasting waypoint data as an interim to actual input from DCS
 
@@ -64,9 +63,6 @@ look at GP Calc to figure out how I stored strings in vectors.***[ PROBLEM IS CH
 
 FEATURES:
 
-- Sequential (0, 1, 2 ...) versus Named (2, 1, 3 ... alpha, gamma, beta (etc) ) waypoints for flexibility in the stack
-	for route planning. That is to say, the route may not be flown sequentially.
-	
 - File handling to Save and Load prior work.
 
 - Add Alternate Landing/Refuel waypoints and calculations.
@@ -93,11 +89,27 @@ WISH LIST:
 
 
 CLEARED:
+- DONE - Make a scrollable middle pane that allows the top and the bottom of the screen to still be viewed.
+
+- DONE - (Converted InputText to strings) - if I want to save a Name string, look at the char[] vs std::string issue and possible callback resize issue. Also
+look at GP Calc to figure out how I stored strings in vectors.***[ PROBLEM IS CHARS CAN'T BE STORED IN VECTOR ... not copyable/assignable ]***
+
+- DONE - Sequential (0, 1, 2 ...) versus Named (2, 1, 3 ... alpha, gamma, beta (etc) ) waypoints for flexibility in the stack
+	for route planning. That is to say, the route may not be flown sequentially.
+	
+- DONE - Add 'Insert' and 'Delete' 'Move Up, Move Down' waypoint options
+
+-DONE -  BUG - Recalc bug - when moving the waypoint to new order, the prior distance calc goes with it, requiring PROPER recalc. AND...WPT 1 gains a distance,
+instead of being ZERO as the first wpt. Not really Lambdas fault, but in footer aren't adding the recalculated distance and fuel properly due to recalc bug AND the fact that WPT 0 should NEVER have distance and fuel
+calcs stored in the vector. When it moves, the fields are now now non-zero. >> Was stopping recalc flag too early.
+
+- DONE - Waypoints need to be name-able with a string so when we move them in the sequence we can still ID them
 
 - DONE - FIXED: - BUG - Deleting last waypoint causes a crash due to draw after delete in loop.
 
 - DONE - FIXED: BUG - edited values like to bypass the recalc. Why? NOTES: When running calc after b_valueChanged we are passing ONLY specific vector pos, 
-	not recalculating entire vector. So, we need a way to trigger calc not only after value change, but vector structure change.
+	not recalculating entire vector. So, we need a way to trigger calc not only after value change, but vector structure change. This is NOT the same 
+	as the moveWaypoint bug, which causes similar issue.
 
 - DONE - BUG FIX NS/EW bug by adding b_valueChanged trigger
 

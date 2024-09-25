@@ -121,3 +121,15 @@ August 27, 2024
 - got std::string working in the InputText with the prodding of ChatGPT, who did not give me the answer, but who made me think 
 enough to get it working. I still don't understand it.
 - added two new files from the ImGui library to handle the resize callback .... Imgui_stdlib.h and ImplStrings.cpp (my naming...)
+
+
+....some edit/re-calc feature changes here....
+
+feature-2
+UNKNOWN AUG 2024
+- Fix bug in which incorrect recalc on waypoint move.
+
+
+feature-2
+Sept 6, 2024
+- Add demo data for display purposes.
