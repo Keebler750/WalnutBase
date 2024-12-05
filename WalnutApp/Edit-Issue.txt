@@ -1,8 +1,7 @@
 TODO:
 
-- DONE - Add "Insert, Delete, MoveUp, MoveDown" Waypoint editing buttons
-
-- would iterator implementation help?
+- better button icons instead of text.
+- would iterator implementation help with editing or tracking?
 
 
 BUGS:
@@ -16,7 +15,8 @@ ANSWER: Just redraw the entire vector contents and do calcs on them as needed.
 
 - What happens to the calculations if waypoints are moved?
 
-- FUTURE: What happens to saved data and moves or edits?
+- FUTURE: What happens to saved data and moves or edits? Maybe pointers to the data will stay persistent if
+the waypoint order moves?
 
 - TOOLS: Vector insert, erase, swap, clear
 
@@ -30,4 +30,9 @@ CONSIDERATIONS:
 
 - errors from mixed data, or un-recalculated data
 
+
+FINISHED/CLEARED:
+
 - DONE - if we are making the data mobile within the vector, we need a data ID OTHER than the vectorPOS
+
+- DONE - Add "Insert, Delete, MoveUp, MoveDown" Waypoint editing buttons

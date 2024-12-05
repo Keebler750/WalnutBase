@@ -1,10 +1,18 @@
 CURRENT SESSION:
 
-- MOSTLY DONE - Look at waypoint editing. Create issue page...
+- get nav/edit waypoint icons for buttons
 
-- get nav/edit waypoint functioning without bugs!
+- WIP - start looking at flight profile structure
 
-- start looking at flight profile structure
+- attach drop downs for fuel calcs to the actual route legs and store the params somewhere
+
+- build error check and alert for invalid drop down data or fuel performance data missing due to out of params (NO DATA)
+
+- how to alert user of invalid fuel data selection?
+
+- Global vs per-leg flight params for calculations, and also sub-leg flight builder for basic manuevers within a leg profile
+
+- Display a fuel use graph?
 
 
 
@@ -89,6 +97,8 @@ WISH LIST:
 
 
 CLEARED:
+- DONE - Look at waypoint editing. Create issue page...
+
 - DONE - Make a scrollable middle pane that allows the top and the bottom of the screen to still be viewed.
 
 - DONE - (Converted InputText to strings) - if I want to save a Name string, look at the char[] vs std::string issue and possible callback resize issue. Also

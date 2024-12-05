@@ -1,6 +1,7 @@
 #include "Walnut/Application.h"
 #include "Walnut/EntryPoint.h"
 #include "Walnut/Image.h"
+#include "../F18Data.h"
 
 
 /// <NOTES>
@@ -85,28 +86,48 @@ public:
         // Using the generic BeginCombo() API, you have full control over how to display the combo contents.
         // (your selection data could be an index, a pointer to the object, an id for the object, a flag intrusively
         // stored in the object itself, etc.)
-        const char* items[] = { "1000ft", "5000ft", "10,000ft", "15,000ft", "20,000ft", "25,000ft", "30,000ft", "35,000ft", "40,000ft", "45,000ft" };
-        static int item_current_idx = 0; // Here we store our selection data as an index.
+        const char* alt_menu[] = { "0 ft","1000 ft", "5000 ft", "10,000ft", "15,000ft", "20,000ft", "25,000ft", "30,000ft", "35,000ft", "40,000ft", "45,000ft" };
+        static int alt_current_idx = 0; // Here we store our selection data as an index.
+
+        const char* mach_menu[] = { "0 M", "0.5 M", "0.6 M", "0.7 M", "0.8 M", "0.85 M" };
+        static int mach_current_idx = 0;
 
         // Pass in the preview value visible before opening the combo (it could technically be different contents or not pulled from items[])
-        const char* combo_preview_value = items[item_current_idx];
+        const char* alt_preview_value = alt_menu[alt_current_idx];
+        const char* mach_preview_value = mach_menu[mach_current_idx];
 
         ImGui::PushItemWidth(60);
 
-        if (ImGui::BeginCombo(" Altitude##test", combo_preview_value, ImGuiComboFlags_HeightLargest | ImGuiComboFlags_NoArrowButton))
+        if (ImGui::BeginCombo(" ALT##menu", alt_preview_value, ImGuiComboFlags_HeightLargest | ImGuiComboFlags_NoArrowButton))
         {
-            for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+            for (int n = 0; n < IM_ARRAYSIZE(alt_menu); n++)
             {
-                const bool is_selected = (item_current_idx == n);
-                if (ImGui::Selectable(items[n], is_selected))
-                    item_current_idx = n;
+                const bool is_selected = (alt_current_idx == n);
+                if (ImGui::Selectable(alt_menu[n], is_selected))
+                    alt_current_idx = n;
 
                 // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
                 if (is_selected)
                     ImGui::SetItemDefaultFocus();
             }ImGui::EndCombo();
 
-        }ImGui::PopItemWidth();
+        } ImGui::SameLine();
+
+        if (ImGui::BeginCombo(" MACH##menu",mach_preview_value, ImGuiComboFlags_HeightLargest | ImGuiComboFlags_NoArrowButton))
+        {
+            for (int n = 0; n < IM_ARRAYSIZE(mach_menu); n++)
+            {
+                const bool is_selected = (mach_current_idx == n);
+                if (ImGui::Selectable(mach_menu[n], is_selected))
+                    mach_current_idx = n;
+
+                // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                if (is_selected)
+                    ImGui::SetItemDefaultFocus();
+            }ImGui::EndCombo();
+
+        } ImGui::PopItemWidth();
+
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #pragma region
@@ -219,8 +240,14 @@ public:
                 }
             } ImGui::Dummy(ImVec2(20.0f, 0.0f)); ImGui::SameLine();
 
-            if (ImGui::InputFloat("Fuel Flow, LBS/nm", &fuelFlow, NULL, NULL, "%.0f"))
-                b_valueChanged = true;
+            // Manual fuel flow entry:
+            fuelFlow = F18_FuelDataLB_NM [mach_current_idx][alt_current_idx];
+            
+            ImGui::InputFloat("Fuel Flow, LBS/nm", &fuelFlow, NULL, NULL, "%.0f");
+            
+            
+                // if ()
+                //b_valueChanged = true;
 
 
             ImGui::PopItemWidth();
@@ -246,6 +273,7 @@ public:
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.25f, 1.0f, 1.0f));
 
 #pragma endregion --------- formatting ---
+        
         ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 10.0f);
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10.0f, 10.0f));
 

@@ -133,3 +133,14 @@ UNKNOWN AUG 2024
 feature-2
 Sept 6, 2024
 - Add demo data for display purposes.
+
+
+feature-2
+November...2024
+- add specific aircraft (F-18) data header file
+- add two dimensional array for fuel use per altitude and speed (in Mach)
+
+feature-2
+December 2, 2024
+- add combo functionality to create a user dropdown for altitude and speed 
+- Lookup the fuel data based on user drop down and auto-input the fuel flow to be used in global calcs.

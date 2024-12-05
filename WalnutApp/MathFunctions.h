@@ -10,6 +10,7 @@
 #include <thread> // std::this_thread, std::chrono::milliseconds
 #include <imgui.h>
 #include "imgui_stdlib.h"
+//#include "F18Data.h"
 
 // This is used as the position index inside the vector of waypoint data.
 static int g_vectorPOS;
@@ -36,7 +37,7 @@ const float conver_MILES = 0.6213712f;
 
 constexpr float M_PI = 3.14159265358979323846f;
 
-static float fuelFlow = 15.0f;
+static float fuelFlow = 0.0f;
 static float CorrectedFuelRate = 0.0f;
 
 static int totalFuelUsed = 0;
@@ -210,8 +211,7 @@ private:
 
             //INPUT AND DISPLAY WPT LAT, including NORTH/SOUTH:
             ImGui::Text("LAT   ");ImGui::SameLine();ImGui::PushItemWidth(scaledElementSize); /// width for combo button
-
-            if (ImGui::Combo("##1", &WaypointEntry.at(g_vectorPOS).NS, "North\0South\0"))
+            if (ImGui::Combo("##1", &WaypointEntry.at(g_vectorPOS).NS, "North\0 South\0"))
             {
                 //WaypointEntry.at(g_vectorPOS).NS = WaypointEntry.at(g_vectorPOS).NS;
                 b_valueChanged = true;
@@ -247,7 +247,7 @@ private:
             ImGui::Text("LONG"); ImGui::SameLine(); ImGui::PushItemWidth(scaledElementSize); /// width for combo button
 
             //Set East/West:
-            if (ImGui::Combo("##2", &WaypointEntry.at(g_vectorPOS).EW, "East\0West\0"))
+            if (ImGui::Combo("##2", &WaypointEntry.at(g_vectorPOS).EW, "East\0 West\0"))
             {
                 WaypointEntry.at(g_vectorPOS).EW = WaypointEntry.at(g_vectorPOS).EW;
                 b_valueChanged = true;
